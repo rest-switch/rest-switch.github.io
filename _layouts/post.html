@@ -1,0 +1,20 @@
+---
+layout: default
+---
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    {% if page.title %}<h2 class="post-title" itemprop="name headline">{{ page.title }}</h2>{% endif %}
+    {% if page.subtitle %}<p><em>{{ page.subtitle }}</em></p>{% endif %}
+    <p class="post-meta" style="font-size: 85%">
+      {% if page.author %}<span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author }}</span></span><br />{% endif %}
+      <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%B %-d, %Y" }}</time>
+    </p>
+  </header>
+  <p>&nbsp;</p>
+
+  <div class="post-content" itemprop="articleBody">
+    {{ content }}
+  </div>
+
+</article>

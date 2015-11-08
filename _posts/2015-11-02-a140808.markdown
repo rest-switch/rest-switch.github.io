@@ -1,0 +1,16 @@
+---
+layout: post
+title:  "Hey Kids! Grow giant open source IoT controllers in your basement!"
+subtitle: Using off-the-shelf industrial-grade commodity hardware for sophisticated Internet of Things applications.
+date:   2015-11-02 05:24:42 -0500
+author: John Clark
+categories: a140808 iot opensource
+---
+
+<h4 style="font-weight: bold; color: #0388A6; text-shadow: 0px 1px 1px #4d4d4d">Purpose</h4>
+This is an open source project to connect an high durability but inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub. The result is a high quality yet extremely low cost solution with a huge number of IoT applications such as: simple on/off control, one-shot activation of devices like garage doors, state monitoring, Internet home thermostat, burglar alarm, and sprinkler system control to name only a few. The goal is to create an open source ecosystem of inexpensive commodity hardware and application software for a wide range of IoT command and control applications.
+
+<p>&nbsp;</p>
+<h4 style="font-weight: bold; color: #0388A6; text-shadow: 0px 1px 1px #4d4d4d">Physical Inspection</h4>
+The device used in this project is available from AliExpress for approximately $65 at the time of this writing. It comes with no useful documentation and its factory configuration is of limited value. There is no model number, so I decided to call it the A140808 which encodes the fact that I first bought it in 2014 and it has 08 inputs and 08 outputs.
+
