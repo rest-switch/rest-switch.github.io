@@ -40,9 +40,10 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
   text-decoration: underline;
 }
 
-.post-title {
-  color: rgb(97, 97, 97);
-  text-shadow: rgb(224, 224, 224) 1px 1px 0px;
+.post-title,
+.post-content h4 {
+  color: #146c8e;
+  font-weight: bold;
 }
 
 .bs-callout {
