@@ -81,9 +81,13 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
   margin-bottom: 5px;
 }
 
-/*.navbar-default .navbar-brand { */
 .navbar > .container .navbar-brand {
   font-weight: bold;
-  margin-left: -20px;
+}
+
+@media (min-width: 768px) {
+  .navbar > .container .navbar-brand {
+    margin-left: -20px;
+  }
 }
 
