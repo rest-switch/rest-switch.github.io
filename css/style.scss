@@ -37,7 +37,7 @@ a:hover {
 }
 
 .content {
-  margin: 6em 8em 6em 8em;
+  margin: 6em;
   flex: 1;
 }
 
@@ -61,9 +61,12 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
 .post-content h1,
 .post-content h2,
 .post-content h3,
-.post-content h4 {
+.post-content h4,
+.post-content h5 {
   color: #146c8e;
   font-weight: bold;
+  padding-top: 70px;
+  margin-top: -70px;
 }
 
 .bs-callout {
@@ -82,7 +85,8 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
 .bs-callout h1,
 .bs-callout h2,
 .bs-callout h3,
-.bs-callout h4 {
+.bs-callout h4,
+.bs-callout h5 {
   margin-top: 0;
   margin-bottom: 5px;
 }
