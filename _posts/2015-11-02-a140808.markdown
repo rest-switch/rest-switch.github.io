@@ -10,18 +10,19 @@ author:     John Clark
 categories: a140808 iot opensource
 ---
 
-####Table of Contents
+###Table of Contents
   * [Introduction](#introduction)
   * [Getting Started](#getting_started)
 
 <span>&nbsp;</span>
 
-####Introduction
+###Introduction
 This is an open source project to connect an high durability yet inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub. The result is a high quality yet extremely low cost solution with a huge number of IoT applications such as: simple on/off control, one-shot activation of devices like garage doors, state monitoring, Internet home thermostat, burglar alarm, and sprinkler system control to name only a few. The goal is to create an open source ecosystem of inexpensive commodity hardware and application software for a wide range of IoT command and control applications.
 
 <span>&nbsp;</span>
 
-####Physical Inspection
+**Physical Inspection**
+
 The device used in this project is available from AliExpress for approximately $65 at the time of this writing. It comes with no useful documentation and its factory configuration is of limited value. There is no model number, so I decided to call it the A140808 which encodes the fact that I first bought it in 2014 and it has 08 inputs and 08 outputs.
 
 <span>&nbsp;</span>
@@ -42,7 +43,8 @@ The back of the enclosure (Figure 2) reveals more signs of its industrial automa
 </table></center>
 <span>&nbsp;</span>
 
-####Teardown
+**Teardown**
+
 Removing the cover of the A140808 reveals two major components (Figure 3). The first is the main IO board sporting an Atmel ATmega32A microcontroller. The ATmega32A is used to monitor the 8 opto-isolated inputs and to control the 8 relay outputs. The second major component is the Hi-Link HLK-RM04 Ethernet/WiFi/Serial module which runs embedded Linux. The brains of the HLK-RM04 is an Ralink RT5350 SOC clocked at 360MHz. Ralink was purchased by MediaTek in 2011 and documentation for the SOC became very difficult to find for some reason. Fortunately, Jiapeng Li has created OpenWRT support for the HLK-RM04 module we will lean on later in the article.
 
 <span>&nbsp;</span>
@@ -65,6 +67,27 @@ Looking at what all is included in this commercial quality device with WiFi, Eth
 
 <span>&nbsp;</span>
 
-####Getting Started <a name="getting_started"></a>
+###Getting Started<a name="getting_started"></a>
 
-lorum ipsum
+<br/>**Linux Build Environment**
+
+The makefiles and shell scripts for this project are written for Linux. If you are not already setup to use Linux, the easiest way to do so is to either use VirtualBox with Vagrant or use the Amazon AWS Free Tier to build this project. Linux distributions such as Debian, Ubuntu, RedHat, CentOS, and Amazon Linux are all excellent choices and each are similarly easy to use for this project. It is beyond the scope of this document to provide information on setting up or using Linux. If you are unfamiliar with Linux, it is best to get a friend to help you out or read one of the excellent tutorials found online.
+
+<span>&nbsp;</span>
+
+Ubuntu Trusty 14.04 requires the following prerequisites:
+
+{% highlight sh %}
+sudo apt-get update && sudo apt-get upgrade
+sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip git subversion docker
+{% endhighlight %}
+
+<span>&nbsp;</span>
+
+Amazon Linux requires the following prerequisites:
+
+{% highlight sh %}
+sudo yum update
+sudo yum install gcc gcc-c++ ncurses-devel zlib-devel patch  perl\(Data::Dumper\) git subversion docker
+{% endhighlight %}
+
