@@ -1,17 +1,70 @@
 ---
-layout: post
-title:  "Hey Kids! Grow giant open source IoT controllers in your own basement!"
-subtitle: Using off-the-shelf industrial-grade commodity hardware for sophisticated Internet of Things applications.
-date:   2015-11-02 05:24:42 -0500
-author: John Clark
+layout:     post
+title:      Hey Kids! Grow giant open source IoT controllers in your own basement!
+subtitle:   Using off-the-shelf industrial-grade commodity hardware for sophisticated Internet of Things applications.
+excerpt:    This is an open source project to connect an high durability but inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub.
+image:      businessman.png
+image-px:   250
+date:       2015-11-02 05:24:42 -0500
+author:     John Clark
 categories: a140808 iot opensource
 ---
 
-####Purpose
-This is an open source project to connect an high durability but inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub. The result is a high quality yet extremely low cost solution with a huge number of IoT applications such as: simple on/off control, one-shot activation of devices like garage doors, state monitoring, Internet home thermostat, burglar alarm, and sprinkler system control to name only a few. The goal is to create an open source ecosystem of inexpensive commodity hardware and application software for a wide range of IoT command and control applications.
+####Table of Contents
+  * [Introduction](#introduction)
+  * [Getting Started](#getting_started)
 
-<p>&nbsp;</p>
+<span>&nbsp;</span>
+
+####Introduction
+This is an open source project to connect an high durability yet inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub. The result is a high quality yet extremely low cost solution with a huge number of IoT applications such as: simple on/off control, one-shot activation of devices like garage doors, state monitoring, Internet home thermostat, burglar alarm, and sprinkler system control to name only a few. The goal is to create an open source ecosystem of inexpensive commodity hardware and application software for a wide range of IoT command and control applications.
+
+<span>&nbsp;</span>
 
 ####Physical Inspection
 The device used in this project is available from AliExpress for approximately $65 at the time of this writing. It comes with no useful documentation and its factory configuration is of limited value. There is no model number, so I decided to call it the A140808 which encodes the fact that I first bought it in 2014 and it has 08 inputs and 08 outputs.
 
+<span>&nbsp;</span>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="600px" src="/images/f1_enclosure.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 1: The A140808 Device Enclosure with WiFi Antenna</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+Upon examination of the outside of the device, we see that like most industrial automation equipment, it supports a wide range of voltages from 7v to 28v (Figure 1). Notice it does not specify AC or DC (examination of the buck converter later on shows that it is DC only).
+
+The back of the enclosure (Figure 2) reveals more signs of its industrial automation purpose with the EN 50022 DIN mounting hardware.
+
+<span>&nbsp;</span>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="600px" src="/images/f2_din.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 2: The A140808 DIN Mounting Clips</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+####Teardown
+Removing the cover of the A140808 reveals two major components (Figure 3). The first is the main IO board sporting an Atmel ATmega32A microcontroller. The ATmega32A is used to monitor the 8 opto-isolated inputs and to control the 8 relay outputs. The second major component is the Hi-Link HLK-RM04 Ethernet/WiFi/Serial module which runs embedded Linux. The brains of the HLK-RM04 is an Ralink RT5350 SOC clocked at 360MHz. Ralink was purchased by MediaTek in 2011 and documentation for the SOC became very difficult to find for some reason. Fortunately, Jiapeng Li has created OpenWRT support for the HLK-RM04 module we will lean on later in the article.
+
+<span>&nbsp;</span>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="600px" src="/images/f3_comp.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 3: Components of the A140808</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+Removing the socketed HLK-RM04 reveals the Atmel ATmega32A microcontroller (figure 4). Note that the microcontroller also has a six pin ICSP programming header for our convenience. Unfortunately the header pinout is NOT AVR-ICSP compatible, so we will be building a custom wiring harness later on. It is also worth noting that the ATmega32A is very similar to the ATmega328P used on the Arduino UNO and the ATmega32U4 used on the Arduino Leonardo. We will be using the Arduino SDK to program this chip later on.
+
+<span>&nbsp;</span>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="600px" src="/images/f4_prog.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 4: Atmel ATmega32A and Six Pin Programming Header</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+Looking at what all is included in this commercial quality device with WiFi, Ethernet, Ralink RT5350 SOC, Atmel ATmega32A, 8 opto-isolated inputs, 8 relay outputs, screw terminal connectors, DIN mounts, and a wide input voltage range of 7-28VDC, the A140808 is an incredible platform for open source IoT projects.
+
+<span>&nbsp;</span>
+
+####Getting Started <a name="getting_started"></a>
+
+lorum ipsum

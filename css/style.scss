@@ -58,6 +58,9 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
 }
 
 .post-title,
+.post-content h1,
+.post-content h2,
+.post-content h3,
 .post-content h4 {
   color: #146c8e;
   font-weight: bold;
@@ -76,6 +79,9 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
   border-left-color: #208040;
 }
 
+.bs-callout h1,
+.bs-callout h2,
+.bs-callout h3,
 .bs-callout h4 {
   margin-top: 0;
   margin-bottom: 5px;
