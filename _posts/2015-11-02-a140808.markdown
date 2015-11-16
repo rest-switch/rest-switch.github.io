@@ -256,19 +256,17 @@ Take note of the <code>ca_certs</code> directory which is the location where the
 Next, the type of SSH access for the device needs to be considered. It is also possible to configure no SSH access. Certificates based SSH authentication is considered more secure, but password based authentication is also available. It is possible to configure both types of authentication then lockout the password based authentication mechanism at a later time as well. There is no great way to recover access if the certificate is lost or the password is forgotten, so regaining access would require reflashing the firmware. This is an open source project, and OpenWRT does make provisions for password recovery, so this could make a nice enhancement to the project. In general, questions regarding the HLK-RM04 device can easily be searched on the OpenWRT website.
 
 On the command line, include one or more of the options desired. For example, to compile with password access and have the build process prompt (pmt) for the password, type:
-
 {% highlight sh %}
 make sshpw=pmt
 {% endhighlight %}
 
 To configure a password directly (“mysecret” in this example) and to bundle a newly generated SSH cert file, type:
-
 {% highlight sh %}
 make sshpw=mysecret sshcert=gen
 {% endhighlight %}
 
-{% highlight sh %}
 Note that some options are mutually exclusive with each other. The full listing of options is as follows:
+{% highlight sh %}
 no ssh access: ssh=none
 no ssh password access: sshpw=none
 ssh password access (prompt): sshpw=pmt
