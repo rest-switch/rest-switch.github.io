@@ -53,7 +53,7 @@ The back of the enclosure (Figure 2) reveals more signs of its industrial automa
 
 **Teardown**
 
-Removing the cover of the A140808 reveals two major components (Figure 3). The first is the main IO board sporting an Atmel ATmega32A microcontroller. The ATmega32A is used to monitor the 8 opto-isolated inputs and to control the 8 relay outputs. The second major component is the Hi-Link HLK-RM04 Ethernet/WiFi/Serial module which runs embedded Linux. The brains of the HLK-RM04 is an Ralink RT5350 SOC clocked at 360MHz. Ralink was purchased by MediaTek in 2011 and documentation for the SOC became very difficult to find for some reason. Fortunately, Jiapeng Li has created OpenWRT support for the HLK-RM04 module we will lean on later in the article.
+Removing the cover of the A140808 reveals two major components (Figure 3). The first is the main IO board sporting an <a href="http://www.atmel.com/Images/Atmel-8155-8-bit-Microcontroller-AVR-ATmega32A_Datasheet.pdf" target="_blank">Atmel ATmega32A</a> microcontroller. The ATmega32A is used to monitor the 8 opto-isolated inputs and to control the 8 relay outputs. The second major component is the <a href="http://www.hlktech.net/product_detail.php?ProId=39" target="_blank">Hi-Link HLK-RM04</a> Ethernet/WiFi/Serial module which runs embedded Linux. The brains of the HLK-RM04 is an Ralink RT5350 SOC clocked at 360MHz. Ralink was purchased by MediaTek in 2011 and documentation for the SOC became very difficult to find for some reason. Fortunately, Jiapeng Li has created <a href="https://github.com/JiapengLi" target="_blank">OpenWRT support</a> for the HLK-RM04 module we will lean on later in the article.
 
 <span>&nbsp;</span>
 <center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
@@ -80,7 +80,7 @@ Looking at what all is included in this commercial quality device with WiFi, Eth
 
 <br/>**Linux Build Environment**
 
-The makefiles and shell scripts for this project are written for Linux. If you are not already setup to use Linux, the easiest way to do so is to either use VirtualBox with Vagrant or use the Amazon AWS Free Tier to build this project. Linux distributions such as Debian, Ubuntu, RedHat, CentOS, and Amazon Linux are all excellent choices and each are similarly easy to use for this project. It is beyond the scope of this document to provide information on setting up or using Linux. If you are unfamiliar with Linux, it is best to get a friend to help you out or read one of the excellent tutorials found online.
+The makefiles and shell scripts for this project are written for Linux. If you are not already setup to use Linux, the easiest way to do so is to either use <a href="https://www.virtualbox.org" target="_blank">VirtualBox</a> with <a href="https://www.vagrantup.com" target="_blank">Vagrant</a> or use the <a href="https://aws.amazon.com/free" target="_blank">Amazon AWS Free Tier</a> to build this project. Linux distributions such as Debian, Ubuntu, RedHat, CentOS, and Amazon Linux are all excellent choices and each are similarly easy to use for this project. It is beyond the scope of this document to provide information on setting up or using Linux. If you are unfamiliar with Linux, it is best to get a friend to help you out or read one of the <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html" target="_blank">excellent tutorials</a> found online.
 
 <span>&nbsp;</span>
 
@@ -166,7 +166,7 @@ In summary, the following certificate files and their use are as follows:
 
 > <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated ca private key:  acme-co_ca_private</code>
 >
-> The private certificate for the CA. This certificate is only used to sign certificate signing requests (CSRs). The privacy of this key is paramount to the integrity of the entire certificate trust chain and should be securely stored using best practices.
+> The private certificate for the CA. This certificate is only used to sign certificate signing requests (CSRs). The privacy of this key is paramount to the integrity of the entire certificate trust chain and should be securely stored <a href="https://www.thawte.com/code-signing/whitepaper/best-practices-for-code-signing-certificates.pdf" target="_blank">using best practices</a>.
 
 > <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated cert public cert:  acme-co_cert_public.cer</code>
 >
