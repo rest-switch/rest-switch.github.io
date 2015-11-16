@@ -36,6 +36,13 @@ a:hover {
     padding-bottom: 12px;
 }
 
+figure {
+  margin-top: 20px;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  margin-left: 40px;
+}
+
 .content {
   margin: 6em;
   flex: 1;
@@ -65,8 +72,13 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
 .post-content h5 {
   color: #146c8e;
   font-weight: bold;
-  padding-top: 70px;
-  margin-top: -70px;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -40px;
+    visibility: hidden;
 }
 
 .bs-callout {

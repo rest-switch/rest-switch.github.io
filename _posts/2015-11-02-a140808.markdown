@@ -13,7 +13,15 @@ categories: a140808 iot opensource
 ###Table of Contents
   * [Introduction](#introduction)
   * [Getting Started](#getting_started)
+  * [Security First](#security_first)
+  * [Building Firmware](#building_firmware)
+  * [Flashing Firmware](#flashing_firmware)
+  * [Booting & SSH](#booting_ssh)
+  * [Building Webserver](#building_webserver)
+  * [Building Android](#building android)
+  * [Conclusion](#conclusion)
 
+<a class="anchor" id="introduction"></a>
 <span>&nbsp;</span>
 
 ###Introduction
@@ -27,7 +35,7 @@ The device used in this project is available from AliExpress for approximately $
 
 <span>&nbsp;</span>
 <center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
-<tr><td><img width="600px" src="/images/f1_enclosure.jpg" /></td></tr>
+<tr><td><img width="500px" src="/images/f1_enclosure.jpg" /></td></tr>
 <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 1: The A140808 Device Enclosure with WiFi Antenna</td></tr>
 </table></center>
 <span>&nbsp;</span>
@@ -38,7 +46,7 @@ The back of the enclosure (Figure 2) reveals more signs of its industrial automa
 
 <span>&nbsp;</span>
 <center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
-<tr><td><img width="600px" src="/images/f2_din.jpg" /></td></tr>
+<tr><td><img width="450px" src="/images/f2_din.jpg" /></td></tr>
 <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 2: The A140808 DIN Mounting Clips</td></tr>
 </table></center>
 <span>&nbsp;</span>
@@ -58,16 +66,17 @@ Removing the socketed HLK-RM04 reveals the Atmel ATmega32A microcontroller (figu
 
 <span>&nbsp;</span>
 <center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
-<tr><td><img width="600px" src="/images/f4_prog.jpg" /></td></tr>
+<tr><td><img width="650px" src="/images/f4_prog.jpg" /></td></tr>
 <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 4: Atmel ATmega32A and Six Pin Programming Header</td></tr>
 </table></center>
 <span>&nbsp;</span>
 
 Looking at what all is included in this commercial quality device with WiFi, Ethernet, Ralink RT5350 SOC, Atmel ATmega32A, 8 opto-isolated inputs, 8 relay outputs, screw terminal connectors, DIN mounts, and a wide input voltage range of 7-28VDC, the A140808 is an incredible platform for open source IoT projects.
 
+<a class="anchor" id="getting_started"></a>
 <span>&nbsp;</span>
 
-###Getting Started<a name="getting_started"></a>
+###Getting Started
 
 <br/>**Linux Build Environment**
 
@@ -82,12 +91,139 @@ sudo apt-get update && sudo apt-get upgrade
 sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip git subversion docker
 {% endhighlight %}
 
-<span>&nbsp;</span>
-
 Amazon Linux requires the following prerequisites:
 
 {% highlight sh %}
 sudo yum update
 sudo yum install gcc gcc-c++ ncurses-devel zlib-devel patch  perl\(Data::Dumper\) git subversion docker
 {% endhighlight %}
+
+<a class="anchor" id="security_first"></a>
+<span>&nbsp;</span>
+
+###Security First
+
+Comprehensive security is a primary concern of IoT applications. This project utilizes well established RSA asymmetric encryption deployed with high strength 4096 bit keys. Additionally, the signed URL design combines HMAC hashing using the high security SHA256 algorithm (HMAC-SHA256) and are narrowly limited in time. In the near future the signed URL implementation will also add adaptive complexity and salting similar to that which is found in the <a href="https://en.wikipedia.org/wiki/Bcrypt" target="_blank">bcrypt</a> key derivation function implementation.
+
+The first step is to generate a self-signed Certificate Authority (CA) which will be built into the A140808 client device, smart phone client devices (TODO: doc custom smartphone CA), as well as the server. This approach allows us to sign our own certificates and establish a tight client-server security contract extremely resistant to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">man-in-the-middle-attacks</a>. Not only is this approach free, if properly deployed, it can be more secure than using a 3rd party CA that is susceptible to <a href="https://en.wikipedia.org/wiki/DigiNotar" target="_blank">hacking</a> or <a href="https://googleonlinesecurity.blogspot.com/2015/03/maintaining-digital-certificate-security.html" target="_blank">improper management</a>, or <a href="http://www.pcworld.com/article/249510/trustwave_admits_issuing_maninthemiddle_digital_certificate_mozilla_debates_punishment.html" target="_blank">poor judgement</a>. However, it is important to note that the certificate strategy does not preclude the use of certificates signed by well-known CAs.
+
+<br/>**Generate the Certificate Authority**
+
+If you are comfortable generating your own self-signed CA and a certificate signed by this CA, do so now. Alternatively, you can use the two helper scripts gen_ca.sh and gen_cert.sh to simplify this process. Begin by downloading the scripts to a Linux machine:
+
+{% highlight sh %}
+wget -O certs.tar.gz https://github.com/rest-switch/stuff/archive/master.tar.gz
+tar xzvf certs.tar.gz
+cd stuff-master/certs
+{% endhighlight %}
+
+Generate the self-signed CA by specifying the CA organization name. The script will default to  a key length setting of 4096 bits and a 10 year expiration. Use the --help command line switch to view the syntax for overriding these default options.
+
+{% highlight sh %}
+    ./gen_ca.sh "Acme Co"
+{% endhighlight %}
+
+When the script completes, it will emit the name of the public and private CA keys that were generated. This CA will be used to sign the certificate in the next step.
+
+{% highlight sh %}
+--> generated ca public cert:  acme-co_ca_public.cer
+--> generated ca private key:  acme-co_ca_private
+{% endhighlight %}
+
+**Generate the Certificate**
+
+The certificate that will be used to encrypt the websocket and https traffic to the web server requires specific information. It is not necessary to generate the certificate public / private key pair at this time, but if the web server domain name(s) are known, it is a convenient time to do so now using the gen_cert.sh script.
+
+For example, to connect to the server using example.com, ws.example.com, and www.example.com, use the following syntax (see the --help command line switch to view all of the command line options):
+
+{% highlight sh %}
+./gen_cert.sh -o "Acme Co" -d example.com -a "example.com ws.example.com www.example.com" -c "San Diego" -s CA -u acme-co_ca_public.cer -v acme-co_ca_private
+{% endhighlight %}
+
+When the script completes, it will emit the name of the public and private keys that were generated. For convenience, the script also emits a combined public certificate / CA chain file suitable for use with Nginx:
+
+{% highlight sh %}
+--> generated cert public cert:  acme-co_cert_public.cer
+--> generated cert public cert chain:  acme-co_cert_chain_public.cer
+--> generated cert private key:  acme-co_cert_private
+{% endhighlight %}
+
+The certificates needed for the entire project are now generated. It is easy to come back and generate new certificates as needed. It should also be noted that the A140808 device is setup to use multiple CAs and more than one can be generated at this point if so desired.
+
+In the next step, the A140808 device image will be built and the public CA file(s) generated in this step will become part of the device firmware image itself. The details are provided in the next section, but for reference the firmware root CA staging directory is:
+
+{% highlight sh %}
+device_a140808-master/hlk-rm04/ca_certs
+{% endhighlight %}
+
+In summary, the following certificate files and their use are as follows:
+
+> <pre><code class="language-sh" data-lang="sh">--&gt; generated ca public cert:  acme-co_ca_public.cer</code></pre>
+>
+> The public certificate for the CA. This is used to validate the identity of subordinate certificates in the trust chain. In the case of this project both the A140808 device and the web server need to have access to a genuine copy of this certificate file.
+
+> <pre><code class="language-sh" data-lang="sh">--&gt; generated ca private key:  acme-co_ca_private</code></pre>
+>
+> The private certificate for the CA. This certificate is only used to sign certificate signing requests (CSRs). The privacy of this key is paramount to the integrity of the entire certificate trust chain and should be securely stored using best practices.
+
+> <pre><code class="language-sh" data-lang="sh">--&gt; generated cert public cert:  acme-co_cert_public.cer</code></pre>
+>
+> This is the main public certificate is used to encrypt data between the client and the server. Clients need to trust the CA that signed this certificate or trust the certificate itself if it is a self-signed certificate.
+
+> <pre><code class="language-sh" data-lang="sh">--&gt; generated cert public cert chain:  acme-co_cert_chain_public.cer</code></pre>
+>
+> This file is a combination of the public certificate and the public root CA certificates suitable for loading in Nginx. The point of this file is to be able to supply the non-well-known public certificate trust chain to clients at connect time.
+
+> <pre><code class="language-sh" data-lang="sh">--&gt; generated cert private key:  acme-co_cert_private</code></pre>
+>
+> The private certificate key for decrypting SSL communication at the server. This file must be present and kept secret on the web server.
+
+Make a note of where these files are located as they will be used in the next steps to build the A140808 firmware and will be deployed with the Nginx web server Docker container.
+
+
+
+<a class="anchor" id="building_firmware"></a>
+<span>&nbsp;</span>
+
+###Building Firmware
+
+Bacon ipsum dolor amet venison pork belly jowl tail capicola. Venison turducken landjaeger filet mignon brisket strip steak sausage. Kevin shankle pig ground round leberkas. Pork chop brisket tri-tip salami chicken drumstick porchetta, shank prosciutto tail kielbasa tongue landjaeger. Prosciutto spare ribs short loin fatback. Shoulder ham hock cupim porchetta flank boudin. Pancetta strip steak venison fatback meatloaf kevin t-bone shankle ham tenderloin swine pastrami turducken sirloin ball tip.
+
+<a class="anchor" id="flashing_firmware"></a>
+<span>&nbsp;</span>
+
+###Flashing Firmware
+
+Bacon ipsum dolor amet pork picanha sausage turducken meatloaf venison. Pancetta pork alcatra ball tip cupim tail turducken rump shank drumstick doner meatball chicken picanha sirloin. Venison sausage shoulder t-bone tongue turkey shankle doner boudin pastrami flank short loin. Bacon pork jowl brisket short loin sausage, salami turducken beef rump. Fatback tongue prosciutto venison, alcatra pork chicken tenderloin ball tip filet mignon.
+
+<a class="anchor" id="booting_ssh"></a>
+<span>&nbsp;</span>
+
+###Booting & SSH
+
+Bacon ipsum dolor amet brisket chuck pork chop, ham hock beef leberkas tenderloin kevin spare ribs venison frankfurter kielbasa pig alcatra sausage. Boudin cow short loin filet mignon turducken. Boudin sirloin tri-tip meatball brisket chicken ham frankfurter venison tongue meatloaf spare ribs tail fatback. Pork belly pancetta alcatra, t-bone meatball salami tenderloin short loin pork loin swine kevin shoulder. Pig ground round kielbasa turkey rump pancetta tenderloin pork chop porchetta. Andouille pork loin pork, hamburger strip steak boudin meatloaf short loin cupim tri-tip shoulder beef pastrami kielbasa.
+
+<a class="anchor" id="building_webserver"></a>
+<span>&nbsp;</span>
+
+###Building Webserver
+
+Bacon ipsum dolor amet turkey jerky rump tri-tip spare ribs. Cupim brisket landjaeger turkey. Picanha alcatra filet mignon meatball. Venison tail drumstick, tri-tip pork rump fatback spare ribs kevin. Sausage landjaeger boudin, rump bresaola prosciutto pork belly. Meatloaf short loin t-bone, alcatra tri-tip fatback pig ham.
+
+<a class="anchor" id="building_android"></a>
+<span>&nbsp;</span>
+
+###Building Android
+
+Bacon ipsum dolor amet landjaeger drumstick chicken jerky brisket shankle pancetta frankfurter ball tip short ribs beef porchetta. Frankfurter tenderloin strip steak tri-tip t-bone, cow pastrami kevin pork shoulder bresaola tail boudin pancetta ground round. Jowl ribeye short ribs, spare ribs kielbasa meatloaf t-bone doner shankle beef shoulder. Pig landjaeger pork, frankfurter kevin short ribs shankle drumstick brisket. Flank kielbasa chuck sirloin, drumstick boudin tenderloin picanha pastrami beef ribs.
+
+<a class="anchor" id="conclusion"></a>
+<span>&nbsp;</span>
+
+###Conclusion
+
+Bacon ipsum dolor amet tail boudin shank ball tip. Spare ribs capicola flank meatball picanha pork loin jowl swine drumstick tri-tip t-bone sirloin. Pastrami ribeye tri-tip, sausage ham tenderloin rump. Pork chop bacon pork loin biltong picanha short ribs alcatra. Venison pork loin filet mignon jerky, short ribs pastrami prosciutto shoulder tongue bacon sirloin. Tongue sausage capicola flank salami venison short ribs chicken shank fatback sirloin picanha frankfurter andouille. Shankle corned beef brisket fatback biltong capicola, pastrami pork.
+
+<span>&nbsp;</span>
+
 
