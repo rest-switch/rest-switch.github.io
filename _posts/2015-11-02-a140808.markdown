@@ -156,6 +156,8 @@ In the next step, the A140808 device image will be built and the public CA file(
 device_a140808-master/hlk-rm04/ca_certs
 {% endhighlight %}
 
+**Certificate Review**
+
 In summary, the following certificate files and their use are as follows:
 
 > <pre><code class="language-sh" data-lang="sh">--&gt; generated ca public cert:  acme-co_ca_public.cer</code></pre>
