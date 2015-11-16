@@ -32,8 +32,8 @@ a:hover {
 
 .navbar-brand,
 .navbar-nav > li > a {
-    padding-top: 18px;
-    padding-bottom: 12px;
+  padding-top: 18px;
+  padding-bottom: 12px;
 }
 
 .highlight pre {
@@ -41,6 +41,18 @@ a:hover {
   margin-right: 40px;
   margin-bottom: 40px;
   margin-left: 40px;
+}
+
+p code {
+  padding: 1px 5px;
+  background-color: #49483E;
+  border: 1px solid #CCC;
+  border-radius: 3px;
+  color: #FFF;
+  font-size: 13px;
+  line-height: 1.42857;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .content {
@@ -75,10 +87,10 @@ div#footer a:focus, div#footer a:active, div#footer a:hover {
 }
 
 a.anchor {
-    display: block;
-    position: relative;
-    top: -40px;
-    visibility: hidden;
+  display: block;
+  position: relative;
+  top: -40px;
+  visibility: hidden;
 }
 
 .bs-callout {

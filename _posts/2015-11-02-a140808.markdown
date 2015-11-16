@@ -160,36 +160,160 @@ device_a140808-master/hlk-rm04/ca_certs
 
 In summary, the following certificate files and their use are as follows:
 
-> <pre><code class="language-sh" data-lang="sh">--&gt; generated ca public cert:  acme-co_ca_public.cer</code></pre>
+> <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated ca public cert:  acme-co_ca_public.cer</code>
 >
 > The public certificate for the CA. This is used to validate the identity of subordinate certificates in the trust chain. In the case of this project both the A140808 device and the web server need to have access to a genuine copy of this certificate file.
 
-> <pre><code class="language-sh" data-lang="sh">--&gt; generated ca private key:  acme-co_ca_private</code></pre>
+> <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated ca private key:  acme-co_ca_private</code>
 >
 > The private certificate for the CA. This certificate is only used to sign certificate signing requests (CSRs). The privacy of this key is paramount to the integrity of the entire certificate trust chain and should be securely stored using best practices.
 
-> <pre><code class="language-sh" data-lang="sh">--&gt; generated cert public cert:  acme-co_cert_public.cer</code></pre>
+> <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated cert public cert:  acme-co_cert_public.cer</code>
 >
 > This is the main public certificate is used to encrypt data between the client and the server. Clients need to trust the CA that signed this certificate or trust the certificate itself if it is a self-signed certificate.
 
-> <pre><code class="language-sh" data-lang="sh">--&gt; generated cert public cert chain:  acme-co_cert_chain_public.cer</code></pre>
+> <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated cert public cert chain:  acme-co_cert_chain_public.cer</code>
 >
 > This file is a combination of the public certificate and the public root CA certificates suitable for loading in Nginx. The point of this file is to be able to supply the non-well-known public certificate trust chain to clients at connect time.
 
-> <pre><code class="language-sh" data-lang="sh">--&gt; generated cert private key:  acme-co_cert_private</code></pre>
+> <code style="font-size: 14px; padding: 6px 10px; margin: 0px 0px 10px">--&gt; generated cert private key:  acme-co_cert_private</code>
 >
 > The private certificate key for decrypting SSL communication at the server. This file must be present and kept secret on the web server.
 
 Make a note of where these files are located as they will be used in the next steps to build the A140808 firmware and will be deployed with the Nginx web server Docker container.
-
-
 
 <a class="anchor" id="building_firmware"></a>
 <span>&nbsp;</span>
 
 ###Building Firmware
 
-Bacon ipsum dolor amet venison pork belly jowl tail capicola. Venison turducken landjaeger filet mignon brisket strip steak sausage. Kevin shankle pig ground round leberkas. Pork chop brisket tri-tip salami chicken drumstick porchetta, shank prosciutto tail kielbasa tongue landjaeger. Prosciutto spare ribs short loin fatback. Shoulder ham hock cupim porchetta flank boudin. Pancetta strip steak venison fatback meatloaf kevin t-bone shankle ham tenderloin swine pastrami turducken sirloin ball tip.
+<br/>**Project Repository**
+
+Download the A140808 github repository and extract it:
+
+{% highlight sh %}
+wget -O device_a140808.tar.gz https://github.com/rest-switch/device_a140808/archive/master.tar.gz
+tar xzvf device_a140808.tar.gz
+cd device_a140808-master
+{% endhighlight %}
+
+The repository contains two subdirectories. The avr directory contains the complete project for building the firmware for the Atmel ATmega32A. Likewise, the hlk-rm04 directory contains the complete project for building the firmware for the Hi-Link HLK-RM04 module.
+
+{% highlight sh %}
+[device_a140808-master]$ ls -al
+drwxrwxr-x 3 ec2-user ec2-user 4096 Oct  8 14:26 avr
+drwxrwxr-x 5 ec2-user ec2-user 4096 Oct  8 14:26 hlk-rm04
+-rw-rw-r-- 1 ec2-user ec2-user 1016 Oct  8 14:26 Makefile
+-rw-rw-r-- 1 ec2-user ec2-user 1200 Oct  8 14:26 README.md
+{% endhighlight %}
+
+Executing make in the <code>device_a140808-master</code> directory will build both projects, or you can descend into either directory and execute <code>make</code> to build that project alone.
+
+
+<br/>**Building the Atmel ATmega32A Firmware**
+
+Switch to the <code>device_a140808-master/avr</code> directory and type <code>make</code>. The build will complete very quickly and the target binaries will be placed into the <code>bin</code> directory. The files of interest are <code>a140808.hex</code> or <code>a140808.bin</code> depending on the programmer used to flash the device.
+
+{% highlight sh %}
+[avr]$ ls -al bin
+-rwxrwxr-x 1 ec2-user ec2-user  32768 Oct 23 19:14 a140808.bin
+-rw-rw-r-- 1 ec2-user ec2-user     13 Oct 23 19:14 a140808.eep
+-rwxrwxr-x 1 ec2-user ec2-user  51387 Oct 23 19:14 a140808.elf
+-rw-rw-r-- 1 ec2-user ec2-user  14999 Oct 23 19:14 a140808.hex
+-rw-rw-r-- 1 ec2-user ec2-user 141167 Oct 23 19:14 a140808.lss
+-rw-rw-r-- 1 ec2-user ec2-user  34626 Oct 23 19:14 a140808.map
+-rw-rw-r-- 1 ec2-user ec2-user  36320 Oct 23 19:14 avr_impl.o
+-rw-rw-r-- 1 ec2-user ec2-user   2825 Oct 23 19:14 avr_impl.o.dep
+-rw-rw-r-- 1 ec2-user ec2-user  41412 Oct 23 19:14 avr_main.o
+-rw-rw-r-- 1 ec2-user ec2-user   2996 Oct 23 19:14 avr_main.o.dep
+-rw-rw-r-- 1 ec2-user ec2-user     55 Oct 23 19:14 fuses.conf
+-rw-rw-r-- 1 ec2-user ec2-user  26808 Oct 23 19:14 serial.o
+-rw-rw-r-- 1 ec2-user ec2-user   2452 Oct 23 19:14 serial.o.dep
+{% endhighlight %}
+
+In a subsequent section, the source files and theory of operation will be discussed in greater detail. However, at this point this is all that is needed to be able to flash the ATmega32A device. Building the HLK-RM04 device is up next.
+
+<br/>**Building the Atmel HLK-RM04 Firmware**
+
+The Hi-Link HLK-RM04 module runs OpenWRT Linux. Additional information on OpenWRT and the Hi-Link device can be found on the OpenWRT wiki. Before building the firmware, the CA certificates build previously need to be copied to the project directory to be included in the resulting firmware image. Change to the device_a140808-master/hlk-rm04 directory and list the files.
+
+{% highlight sh %}
+[hlk-rm04]$ ls -al
+drwxrwxr-x  2 ec2-user ec2-user 4096 Oct 23 10:10 ca_certs
+drwxrwxr-x  3 ec2-user ec2-user 4096 Oct 23 10:03 files
+drwxrwxr-x  2 ec2-user ec2-user 4096 Oct 23 10:03 firmware
+-rw-rw-r--  1 ec2-user ec2-user 8442 Oct 23 10:03 Makefile
+drwxrwxr-x 15 ec2-user ec2-user 4096 Oct 23 12:18 openwrt-master
+drwxrwxr-x  5 ec2-user ec2-user 4096 Oct 23 10:03 tools
+{% endhighlight %}
+
+**Copy CA Public Certificates**
+
+Take note of the <code>ca_certs</code> directory which is the location where the CA certificate that were generated earlier belong. Note that the firmware image only requires the public CA file(s). The build script will copy all files ending in <code>_ca_public.cer</code> to the firmware image so following this naming convention is required.
+
+<br/>**SSH Access**
+
+Next, the type of SSH access for the device needs to be considered. It is also possible to configure no SSH access. Certificates based SSH authentication is considered more secure, but password based authentication is also available. It is possible to configure both types of authentication then lockout the password based authentication mechanism at a later time as well. There is no great way to recover access if the certificate is lost or the password is forgotten, so regaining access would require reflashing the firmware. This is an open source project, and OpenWRT does make provisions for password recovery, so this could make a nice enhancement to the project. In general, questions regarding the HLK-RM04 device can easily be searched on the OpenWRT website.
+
+On the command line, include one or more of the options desired. For example, to compile with password access and have the build process prompt (pmt) for the password, type:
+
+{% highlight sh %}
+make sshpw=pmt
+{% endhighlight %}
+
+To configure a password directly (“mysecret” in this example) and to bundle a newly generated SSH cert file, type:
+
+{% highlight sh %}
+make sshpw=mysecret sshcert=gen
+{% endhighlight %}
+
+{% highlight sh %}
+Note that some options are mutually exclusive with each other. The full listing of options is as follows:
+no ssh access: ssh=none
+no ssh password access: sshpw=none
+ssh password access (prompt): sshpw=pmt
+ssh password access: sshpw=<password>
+no ssh certificate access: sshcert=none
+ssh certificate access, create new cert: sshcert=gen
+ssh certificate access, use existing cert: sshcert=<filespec>
+{% endhighlight %}
+
+**Note:** If the build fails early before the .config configuration file can be generated, it is possible to get stuck at the Linux kernel config (blue) menu. You should never see this menu in a normal build. If this happens run a make distclean and restart the build from scratch.
+
+**Tip:** Long-running builds will fail if the terminal session gets disconnected. Launch the screen utility to allow the build to continue even of the terminal session becomes disconnected. If the terminal session does become detached, reconnect to the Linux host and execute screen -r to reattach to the running session.
+
+After the build finishes successfully, the firmware file <code>openwrt-ramips-rt305x-hlk-rm04-squashfs-sysupgrade.bin</code> will be placed into the bin directory. For details on the sysupgrade.bin file, refer to the <a href="http://wiki.openwrt.org/doc/howto/generic.sysupgrade" target="_blank">OpenwWRT wiki</a>. The sysupgrade file does not include a bootloader, so it can only be used to update an already running A140808 device. In the later sections of the documentation, instructions for doing so are included. In the case of a new device, it is necessary to build a full firmware image which takes a few more steps.
+
+<br/>**Adding u-boot**
+
+In order to be able to flash the device using a flash programmer, a complete firmware image file is required. In this case, the u-boot that ships with the HLK-RM04 can be used in conjunction with the MAC addresses printed on the front of the device (Figure 5).
+
+<span>&nbsp;</span>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="350px" src="/images/f5_hlkrm04.jpg" /></td></tr>
+<tr><td>Figure 5: The HLK-RM04 Module with MAC Addresses</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+
+Notice that the MAC addresses are consecutive. To specify a MAC address and generate the full image firmware, use the <code>make image mac=aabbccddeeff</code> command and specify the first MAC address listed on your device. For example:
+
+{% highlight sh %}
+make image mac=aca213b54a3e
+{% endhighlight %}
+
+This will generate a full image firmware file with a unique serial number, for example:
+
+{% highlight sh %}
+bin/a140808_akbmkzh80.bin
+{% endhighlight %}
+
+The serial number is a nine character alphanumeric code following the underscore. In the case above, the serial number is <code>akbmkzh80</code>. This code is important and will be used to uniquely identify the device when it connects to the cloud.
+
+The firmware generation for the HLM-RM04 is now complete. In the next section the firmware for the two chips will be written to their respective devices.
+
+
+
 
 <a class="anchor" id="flashing_firmware"></a>
 <span>&nbsp;</span>
