@@ -14,10 +14,10 @@ categories: a140808 iot opensource
   * [Introduction](#introduction)
   * [Getting Started](#getting_started)
   * [Security First](#security_first)
-  * [Building Firmware](#building_firmware)
-  * [Flashing Firmware](#flashing_firmware)
-  * [Booting & SSH](#booting_ssh)
-  * [Building Webserver](#building_webserver)
+  * [Building the Firmware](#building_firmware)
+  * [Flashing the Firmware](#flashing_firmware)
+  * [Booting and SSH](#booting_ssh)
+  * [Building the Webserver](#building_webserver)
   * [Building Android](#building android)
   * [Conclusion](#conclusion)
 
@@ -185,7 +185,7 @@ Make a note of where these files are located as they will be used in the next st
 <a class="anchor" id="building_firmware"></a>
 <span>&nbsp;</span>
 
-###Building Firmware
+###Building the Firmware
 
 <br/>**Project Repository**
 
@@ -293,7 +293,6 @@ In order to be able to flash the device using a flash programmer, a complete fir
 </table></center>
 <span>&nbsp;</span>
 
-
 Notice that the MAC addresses are consecutive. To specify a MAC address and generate the full image firmware, use the <code>make image mac=aabbccddeeff</code> command and specify the first MAC address listed on your device. For example:
 
 {% highlight sh %}
@@ -310,27 +309,161 @@ The serial number is a nine character alphanumeric code following the underscore
 
 The firmware generation for the HLM-RM04 is now complete. In the next section the firmware for the two chips will be written to their respective devices.
 
-
-
-
 <a class="anchor" id="flashing_firmware"></a>
 <span>&nbsp;</span>
 
-###Flashing Firmware
+###Flashing the Firmware
 
-Bacon ipsum dolor amet pork picanha sausage turducken meatloaf venison. Pancetta pork alcatra ball tip cupim tail turducken rump shank drumstick doner meatball chicken picanha sirloin. Venison sausage shoulder t-bone tongue turkey shankle doner boudin pastrami flank short loin. Bacon pork jowl brisket short loin sausage, salami turducken beef rump. Fatback tongue prosciutto venison, alcatra pork chicken tenderloin ball tip filet mignon.
+<br/>**Programmers**
+
+The firmware for both the Atmel ATmega32A chip and the Hi-Link HLK-RM04 module need to be reflashed for this project. A very popular programmer for Atmel chips is the <a href="http://www.atmel.com/tools/AVRISPMKII.aspx" target="_blank">AVRISP mkII programmer</a>. Flashing the firmware to the Atmel device is straightforward and can be done via the six pin programming header located on the circuit board (see Figure 4). Note that the pinout of the six pin programming header is different than the standard AVRISP pinout.
+
+Programming the HLK-RM04 is more difficult. Although it should be possible to reprogram the device via its programming header or by software, that route is not documented and the device is easy to brick. Empirical testing revealed that it was much easier and foolproof to write directly to the flash memory located on the bottom of the module using the <a href="http://www.autoelectric.cn/EN/TL866_main.html" target="_blank">Autoelectric MiniPro TL866A</a> universal programmer and an <a href="http://www.aliexpress.com/item/TL866A-Universal-Programmer-Support-Over-13000-Chips-USB-Programmer-with-4PCS-Socket-and-IC-Picker-Free/1378818625.html" target="_blank">8 pin SOIC test clip</a>. This technique is also agnostic to a bricked device so it will always work in all circumstances.
+
+An added bonus of the Minipro TL866A model is that it has a six pin ICSP programming interface that can flash Atmel chips via the ICSP programming header located on the A140808 board (Figure 4). This makes it the only programmer needed for the entire project. Support for both the AVRISP mkII and the TL866A programmers are included in the supplied project makefiles.
+
+**Note:** There are two models of the MiniPro TL866: The TL866A provides support for flashing Atmel chips via a six pin ICSP programming interface on the front. The less expensive TL866CS model does not include this ICSP interface and thus will require a second programmer for the Atmel device such as the AVRISP mkII.
+
+<br/>**Atmel ATmega32A Programming with AVRISP mkII**
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+
+The Atmel AVRISP mkII programmer uses Atmel’s AVRISP pinout (Figure 6).
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center>
+  <table border="1" style="font-size: 90%">
+    <col width="110"><col width="110">
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;1 – MISO</td><td style="padding: 5pt">&nbsp;&nbsp;2 – VCC</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;3 – SCK</td><td style="padding: 5pt">&nbsp;&nbsp;4 – MOSI</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;5 – RESET</td><td style="padding: 5pt">&nbsp;&nbsp;6 – GND</td></tr>
+  </table>
+  <p style="margin: 10pt"><span>Figure 6: Atmel AVRISP Pinout</span></p>
+</center>
+
+<span>&nbsp;</span>
+
+The A140808 proprietary ICSP programming header pinout (Figure 7).
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center>
+  <table border="1" style="font-size: 90%">
+    <col width="110"><col width="110">
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;1 – GND</td><td style="padding: 5pt">&nbsp;&nbsp;2 – VCC</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;3 – RESET</td><td style="padding: 5pt">&nbsp;&nbsp;4 – MOSI</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;5 – MISO</td><td style="padding: 5pt">&nbsp;&nbsp;6 – SCK</td></tr>
+  </table>
+  <p style="margin: 10pt"><span>Figure 7: A140808 AVR Programming Header Pinout</span></p>
+</center>
+
+<span>&nbsp;</span>
+
+Programming the Atmel chip using the AVRISP mkII is very straightforward and easy to do. Ideally a custom male-male crossover cable would be built to remap the pins between the programmer and the A140808 programming header. However, since programming the A140808 is likely a one-time operation for most people, using jumper wires is going to make sense for most people. Both approaches are discussed below.
+
+The custom male-male crossover cable approach uses standard female-female jumper wires and a standard six pin IDC female housings to yield the desired pin remappings. This creates a cable with two female ends. Next, the genders at each end are inverted using male-to-male IDC headers which can be super glued into the crossover cable IDC housings. Tip: A metallic silver Sharpie pen can be used to mark pin 1 on each end of the housing.
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center>
+  <table border="1" style="font-size: 90%">
+    <col width="210"><col width="310">
+    <tr style="color: #fff; background-color: #000; text-align: center"><td style="padding: 5pt">DigiKey Part Number</td><td style="padding: 5pt">Description</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;929665-02-03-ND</td><td style="padding: 5pt">&nbsp;&nbsp;6 Pin Male-Male IDC Header</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;952-2031-ND</td><td style="padding: 5pt">&nbsp;&nbsp;6 Pin Female Crimp IDC Housing</td></tr>
+    <tr><td style="padding: 5pt">&nbsp;&nbsp;1471-1230-ND</td><td style="padding: 5pt">&nbsp;&nbsp;150mm Female-Female Jumper Wire</td></tr>
+  </table>
+  <p style="margin: 10pt"><span>Table 1: Crossover Cable DigiKey Part Numbers</span></p>
+</center>
+<span>&nbsp;</span>
+
+The completed conversion is shown in Figure 8. Notice that in this case heat shrink tubing has been used to secure the crossover cable to the programmer.
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="650px" src="/images/f8_harn.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 8: AVRISP mkII Programmer and Custom Crossover Cable</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+Another approach is to use jumper wires for a one-time patch connection. It is worth noting that most off-the-shelf jumper wires are designed for use with breadboards and their pins are very narrow in diameter. The sockets of the female headers are designed to mate with square pin IDC type pins.  Schmartboard Inc. makes jumper wires with these IDC square pin connectors. <a href="http://schmartboard.com/schmartboard-qty-10-7-male-jumpers" target="_blank">Schmartboard part number 920-0099-01</a> is a 10 pack of 7” jumpers that work very well in this application. This part can be sourced from <a href="http://www.mouser.com/search/ProductDetail.aspx?R=0virtualkey0virtualkey920-0099-01" target="_blank">Mouser Electronics</a>.
+
+<br/>**Autoelectric MiniPro TL866A**
+
+The Autoelectric MiniPro TL866A programmer is two programmers in one. The TL866 “A” model has a six pin ICSP programming header that is very easy to reconfigure for programming the A140808. The pinout of the MiniPro ICSP interface (Figure 9) reveals that pins one and three are swapped between it and the A140808 device (compare with Figure 7). In this case, removing the connections from the MiniPro linear header and placing them in a 2x3 IDC housing (DigiKey 952-2031-ND) and changing the gender (DigiKey 929665-02-03-ND) is all that that is required.
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center>
+  <table border="1" style="font-size: 90%">
+    <col width="110"><col width="110"><col width="110"><col width="110"><col width="110"><col width="110">
+    <tr style="text-align: center">
+      <td style="padding: 5pt">1 – RESET</td><td style="padding: 5pt">2 – VCC</td>
+      <td style="padding: 5pt">3 – GND</td><td style="padding: 5pt">4 – MOSI</td>
+      <td style="padding: 5pt">5 – MISO</td><td style="padding: 5pt">6 – SCK</td>
+    </tr>
+  </table>
+  <p style="margin: 10pt"><span>Figure 9: MiniPro ICSP Pinout</span></p>
+</center>
+<span>&nbsp;</span>
+
+The completed cable modification is shown in Figure 10.
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="650px" src="/images/f10_mini_isp.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 10: MiniPro ICSP Cable (Left: Original, Right: Modified)</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="650px" src="/images/f11_mini.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 11: MiniPro TL866A with Modified Six Pin ICSP</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+<br/>**Flashing the Firmware**
+
+Connect the desired Atmel programmer to the header closer to the relays taking care to orient pin 1 properly (see Figure 8). The A140808 device needs to be powered on via an external power source in order for programming to work. Once all connections are made and the device is powered on, use one of the following programming commands.
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<p style="padding-left: 1em; margin: 0">AVRISP mkII</p>
+{% highlight sh %}
+make avr-program
+{% endhighlight %}
+
+<p style="padding-left: 1em; margin: 0">MiniPro TL866A</p>
+{% highlight sh %}
+make mp-program
+{% endhighlight %}
+
+When the command finishes successfully, the Atmel programming is complete.
+
+<br/>**Flashing the HiLink HLK-RM04**
+
+The next step is to program the HLK-RM04. This step requires MiniPro TL866A and an 8 pin SOIC test clip. Start by identifying the flash memory on the HLK-RM04 device. The make and model of the flash memory is required when writing to the part.
+
+Clamp the test clip to the 8 pin flash memory module located on the bottom of the HLK-RM04 device taking care to orient pin 1 properly (see Figure 12).
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
+<tr><td><img width="380px" src="/images/f12_clip.jpg" /></td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 12: SOIC Test Clip on Flash Memory Chip</td></tr>
+</table></center>
+<span>&nbsp;</span>
+
+Once connected, the part is ready to program.
+
 
 <a class="anchor" id="booting_ssh"></a>
 <span>&nbsp;</span>
 
-###Booting & SSH
+###Booting and SSH
 
 Bacon ipsum dolor amet brisket chuck pork chop, ham hock beef leberkas tenderloin kevin spare ribs venison frankfurter kielbasa pig alcatra sausage. Boudin cow short loin filet mignon turducken. Boudin sirloin tri-tip meatball brisket chicken ham frankfurter venison tongue meatloaf spare ribs tail fatback. Pork belly pancetta alcatra, t-bone meatball salami tenderloin short loin pork loin swine kevin shoulder. Pig ground round kielbasa turkey rump pancetta tenderloin pork chop porchetta. Andouille pork loin pork, hamburger strip steak boudin meatloaf short loin cupim tri-tip shoulder beef pastrami kielbasa.
 
 <a class="anchor" id="building_webserver"></a>
 <span>&nbsp;</span>
 
-###Building Webserver
+###Building the Webserver
 
 Bacon ipsum dolor amet turkey jerky rump tri-tip spare ribs. Cupim brisket landjaeger turkey. Picanha alcatra filet mignon meatball. Venison tail drumstick, tri-tip pork rump fatback spare ribs kevin. Sausage landjaeger boudin, rump bresaola prosciutto pork belly. Meatloaf short loin t-bone, alcatra tri-tip fatback pig ham.
 
