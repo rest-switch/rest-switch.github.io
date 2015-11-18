@@ -422,16 +422,20 @@ The completed cable modification is shown in Figure 10.
 
 <br/>**Flashing the Firmware**
 
-Connect the desired Atmel programmer to the header closer to the relays taking care to orient pin 1 properly (see Figure 8). The A140808 device needs to be powered on via an external power source in order for programming to work. Once all connections are made and the device is powered on, use one of the following programming commands.
+Connect the desired Atmel programmer to the header closer to the relays taking care to orient pin 1 properly (see Figure 8). The A140808 device needs to be powered on via an external power source in order for programming to work. Once all connections are made and the device is powered on, use one of the following programming commands. 
+
+**Note:** The A140808 device must be powered on or programming will fail.
 
 <p style="margin: 0"><span>&nbsp;</span></p>
-<p style="padding-left: 1em; margin: 0">AVRISP mkII</p>
+<p style="padding-left: 1em; margin: 0">To Select the AVRISP mkII:</p>
 {% highlight sh %}
+cd device_a140808-master/avr
 make avr-program
 {% endhighlight %}
 
-<p style="padding-left: 1em; margin: 0">MiniPro TL866A</p>
+<p style="padding-left: 1em; margin: 0">To Select the MiniPro TL866A:</p>
 {% highlight sh %}
+cd device_a140808-master/avr
 make mp-program
 {% endhighlight %}
 
@@ -439,9 +443,42 @@ When the command finishes successfully, the Atmel programming is complete.
 
 <br/>**Flashing the HiLink HLK-RM04**
 
-The next step is to program the HLK-RM04. This step requires MiniPro TL866A and an 8 pin SOIC test clip. Start by identifying the flash memory on the HLK-RM04 device. The make and model of the flash memory is required when writing to the part.
+The next step is to program the HLK-RM04. This step requires MiniPro TL866A and an 8 pin SOIC test clip. Start by identifying the flash memory on the HLK-RM04 device. The make and model of the flash memory is required when writing to the part. The part number is written on the chip itself. In my case the flash memory was covered with paint and required acetone and a cotton swab to remove. Using a smartphone to take a picture and zooming in, the part was identified as <a href="http://www.winbond.com/hq/product/code-storage-flash-memory/serial-nor-flash/?__locale=en&amp;partNo=W25Q32BV" target="_blank">Winbond W25Q32BV</a>. Another flash memory used by HiLink for the HLK-RM04 device is <a href="http://www.macronix.com/en-us/Product/Pages/ProductDetail.aspx?PartNo=MX25L3206E" target="_blank">Macronix MX25L3206E</a>
 
-Clamp the test clip to the 8 pin flash memory module located on the bottom of the HLK-RM04 device taking care to orient pin 1 properly (see Figure 12).
+To get a list of possible part numbers the minipro software can program, use the <code>-l</code> command line option (with a grep filter in this case):
+
+<p style="margin: 0"><span>&nbsp;</span></p>
+<p style="padding-left: 1em; margin: 0">Winbond W25Q32BV:</p>
+{% highlight sh %}
+$ device_a140808-master/hlk-rm04/tools/minipro/minipro -l | grep W25Q32
+W25Q32 @MLP8
+W25Q32 @SOIC16
+W25Q32BV
+W25Q32BV @SOIC16
+W25Q32BV @SOIC8
+W25Q32BV @WSON8
+W25Q32V @MLP8
+W25Q32V @SOIC16
+{% endhighlight %}
+
+<p style="padding-left: 1em; margin: 0">Macronix MX25L3206E:</p>
+{% highlight sh %}
+$ device_a140808-master/hlk-rm04/tools/minipro/minipro -l | grep MX25L3206
+MX25L3206E
+MX25L3206E @SOP16
+MX25L3206E @SOP8
+MX25L3206E @USON8
+MX25L3206E @WSON8
+{% endhighlight %}
+
+<p style="padding-left: 1em; margin: 0">If required, build the minipro binary first:</p>
+
+{% highlight sh %}
+$ cd device_a140808/hlk-rm04
+$ make minipro
+{% endhighlight %}
+
+Multiple matching parts will likely be shown, but only the base part without the space will do the job. With the flash part number in-hand, it is time to proceed with programming. Clamp the test clip to the 8 pin flash memory module located on the bottom of the HLK-RM04 device taking care to orient pin 1 properly (see Figure 12).
 
 <p style="margin: 0"><span>&nbsp;</span></p>
 <center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
@@ -450,15 +487,46 @@ Clamp the test clip to the 8 pin flash memory module located on the bottom of th
 </table></center>
 <span>&nbsp;</span>
 
-Once connected, the part is ready to program.
+<p style="padding-left: 1em; margin: 0">Once connected, the part is ready to program.</p>
 
+{% highlight sh %}
+cd device_a140808-master/hlk-rm04
+make program flash=W25Q32BV image=bin/a140808_akbmkzh80.bin
+{% endhighlight %}
+
+**Note:** The actual <code>image=</code> filename is build-specific and will be different than the one shown here.
+
+Once the command successfully completes, the device is ready to boot. Insert the HLK-RM04 daughter card back into the A140808 main board. The pins are offset which prevents the device from being put in backwards, however, take care as to not misalign the pins along the socket.
 
 <a class="anchor" id="booting_ssh"></a>
 <span>&nbsp;</span>
 
 ###Booting and SSH
 
-Bacon ipsum dolor amet brisket chuck pork chop, ham hock beef leberkas tenderloin kevin spare ribs venison frankfurter kielbasa pig alcatra sausage. Boudin cow short loin filet mignon turducken. Boudin sirloin tri-tip meatball brisket chicken ham frankfurter venison tongue meatloaf spare ribs tail fatback. Pork belly pancetta alcatra, t-bone meatball salami tenderloin short loin pork loin swine kevin shoulder. Pig ground round kielbasa turkey rump pancetta tenderloin pork chop porchetta. Andouille pork loin pork, hamburger strip steak boudin meatloaf short loin cupim tri-tip shoulder beef pastrami kielbasa.
+Once powered on, the red LED light on the HLK-RM04 should begin to blink as Linux begins to boot. Once the kernel is loaded the network indicator lights will begin to flash. The device is setup to automatically accept a DHCP issued TCP/IP address, so it is a simple matter to scan the network to find it. Perhaps the easiest way to find the IP address associated with the MAC address used above (see Figure 5) is to search the logs of the network DCHP server. Other options include network scanning apps such as Fing for Android, Lan Scan for OSX, or nmap for Linux:
+
+{% highlight sh %}
+nmap -sP 192.168.1.0/24 >/dev/null && arp -an | grep -i ac:a2:13:b5:4a:3e
+{% endhighlight %}
+
+Once the A140808 IP address is determined, use <code>ssh</code> to login to the device for final configuration. To login, use <code>root</code> for the userid and the password or certificate used in the [Building the Firmware](#building_firmware) step above.
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh root@192.168.1.136
+root@192.168.1.136's password:
+
+
+BusyBox v1.19.4 (2015-10-01 01:02:10 EDT) built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+<span style="color: #54dc69">     ___  ___ ____ ___  ___  ___  ___
+    / _ |&lt;  // / // _ \( _ )/ _ \( _ )
+   / __ |/ //_  _/ // / _  / // / _  |
+  /_/ |_/_/  /_/ \___/\___/\___/\___/
+                   powered by OpenWRT</span>
+
+
+root@a140808:~#</code></pre></figure>
+
 
 <a class="anchor" id="building_webserver"></a>
 <span>&nbsp;</span>
