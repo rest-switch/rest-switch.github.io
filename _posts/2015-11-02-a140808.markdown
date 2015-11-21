@@ -98,6 +98,10 @@ sudo yum update
 sudo yum install gcc gcc-c++ ncurses-devel zlib-devel patch  perl\(Data::Dumper\) git subversion docker
 {% endhighlight %}
 
+**Known Issues**
+
+Ubuntu Wily Werewolf 15.10 is known to have issues building the forked version of OpenWRT used in this project. Use version 15.04 or another version of Linux.
+
 <a class="anchor" id="security_first"></a>
 <span>&nbsp;</span>
 
@@ -293,7 +297,7 @@ In order to be able to flash the device using a flash programmer, a complete fir
 </table></center>
 <span>&nbsp;</span>
 
-Notice that the MAC addresses are consecutive. To specify a MAC address and generate the full image firmware, use the <code>make image mac=aabbccddeeff</code> command and specify the first MAC address listed on your device. For example:
+Notice that the MAC addresses are consecutive. To specify a MAC address and generate the full image firmware, use the <code>make image mac=aabbccddeeff</code> command and specify the first MAC address listed on your device (the build script will assume the second address). For example:
 
 {% highlight sh %}
 make image mac=aca213b54a3e
