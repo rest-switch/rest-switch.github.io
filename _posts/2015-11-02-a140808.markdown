@@ -309,7 +309,7 @@ This will generate a full image firmware file with a unique serial number, for e
 bin/a140808_akbmkzh80.bin
 {% endhighlight %}
 
-The serial number is a nine character alphanumeric code following the underscore. In the case above, the serial number is <code>akbmkzh80</code>. This code is important and will be used to uniquely identify the device when it connects to the cloud.
+The serial number is a nine character alphanumeric code following the underscore. In the case above, the serial number is <code>akbmkzh80</code>. Each time a firmware is emitted, a unique serial number will be generated. Yours will be different than the one shown in this example. Record this numnber and affix it to the outside of the device, it will be used later to uniquely identify the device when it connects to the cloud.
 
 The firmware generation for the HLM-RM04 is now complete. In the next section the firmware for the two chips will be written to their respective devices.
 
