@@ -3,37 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>{{ site.title }} - {{ page.title }}</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/css/style.css">
   <link rel="stylesheet" type="text/css" href="/css/jekyll_monokai_pygments.css">
 </head>
 <body>
-  <!-- fixed navbar -->
-  <nav role="navigation" class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
 
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <span class="navbar-brand">{{ site.title }}</span>
-      </div>
-
-      <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li><a href="/">Home</a></li>
-          <li><a href="/posts.html">Posts</a></li>
-          <li><a target="_blank" href="https://github.com/rest-switch">GitHub</a></li>
-          <li><a target="_blank" href="https://github.com/inindev">About</a></li>
-        </ul>
-      </div>
-
-    </div>
-  </nav>
+  {% include navbar.html %}
 
   <!-- begin page content -->
   <div class="pagecont">
@@ -42,17 +18,10 @@
     </div>
   </div>
 
-  <div id="footer">
-    <span class="credit">
-      Copyright (c) 2015 <a target="_blank" href="https://www.linkedin.com/in/johnclarkdev">John Clark</a> and The REST Switch Authors<br/>
-      Raleigh-Durham, North Carolina<br/><br/>
-      Source code and examples are licensed under the <a target="_blank" href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0 License</a><br/>
-      Website and documentation are licensed under the <a target="_blank" href="http://creativecommons.org/version4">Creative Commons 4.0 License</a>
-    </span>
-  </div>
+  {% include footer.html %}
 
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js" integrity="sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 </html>
 

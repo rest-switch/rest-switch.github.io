@@ -8,6 +8,54 @@ image-px:   250
 date:       2015-11-02 05:24:42 -0500
 author:     John Clark
 categories: a140808 iot opensource
+toc: >
+          <ul class="nav nav-stacked">
+            <li>
+              <a href="#introduction">Introduction</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#intro-phys-insp">Physical&nbsp;Inspection</a></li>
+                <li><a href="#intro-teardown">Teardown</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#getting-started">Getting&nbsp;Started</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#start-build">Build&nbsp;Environment</a></li>
+              </ul>
+            </li>
+            <li><a href="#security-first">Security&nbsp;First</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#security-gen-ca">Generate&nbsp;CA</a></li>
+                <li><a href="#security-sign-cert">Sign&nbsp;Certificate</a></li>
+                <li><a href="#security-cert-review">Certificate&nbsp;Review</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#building-firmware">Building&nbsp;Firmware</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#bfirm-repo">Project&nbsp;Repository</a></li>
+                <li><a href="#bfirm-atmega">ATmega32A</a></li>
+                <li><a href="#bfirm-hlkrm04">HLK-RM04</a></li>
+                <li><a href="#bfirm-copy-ca">Copy&nbsp;CA</a></li>
+                <li><a href="#bfirm-ssh-access">SSH&nbsp;Access</a></li>
+                <li><a href="#bfirm-uboot">u-boot</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#flashing-firmware">Flashing&nbsp;Firmware</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#ffirm-programmers">Programmers</a></li>
+                <li><a href="#ffirm-avrisp">AVRISP&nbsp;mkII&nbsp;Harness</a></li>
+                <li><a href="#ffirm-minipro">MiniPro&nbsp;TL866A&nbsp;Harness</a></li>
+                <li><a href="#ffirm-flashing-atmega">Flashing&nbsp;ATmega32A</a></li>
+                <li><a href="#ffirm-flashing-hlkrm04">Flashing&nbsp;HLK-RM04</a></li>
+              </ul>
+            </li>
+            <li><a href="#booting-ssh">Booting&nbsp;and&nbsp;SSH</a></li>
+            <li><a href="#building-webserver">Building&nbsp;Webserver</a></li>
+            <li><a href="#building-android">Building&nbsp;Android</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+          </ul>
 ---
 
 <a class="anchor" id="introduction"></a>
@@ -16,6 +64,7 @@ categories: a140808 iot opensource
 ###Introduction
 This is an open source project to connect an high durability yet inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub. The result is a high quality yet extremely low cost solution with a huge number of IoT applications such as: simple on/off control, one-shot activation of devices like garage doors, state monitoring, Internet home thermostat, burglar alarm, and sprinkler system control to name only a few. The goal is to create an open source ecosystem of inexpensive commodity hardware and application software for a wide range of IoT command and control applications.
 
+<a class="anchor" id="intro-phys-insp"></a>
 <span>&nbsp;</span>
 
 **Physical Inspection**
@@ -38,6 +87,8 @@ The back of the enclosure (Figure 2) reveals more signs of its industrial automa
 <tr><td><img width="450px" src="/images/f2_din.jpg" /></td></tr>
 <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Figure 2: The A140808 DIN Mounting Clips</td></tr>
 </table></center>
+
+<a class="anchor" id="intro-teardown"></a>
 <span>&nbsp;</span>
 
 **Teardown**
@@ -62,10 +113,12 @@ Removing the socketed HLK-RM04 reveals the Atmel ATmega32A microcontroller (figu
 
 Looking at what all is included in this commercial quality device with WiFi, Ethernet, Ralink RT5350 SOC, Atmel ATmega32A, 8 opto-isolated inputs, 8 relay outputs, screw terminal connectors, DIN mounts, and a wide input voltage range of 7-28VDC, the A140808 is an incredible platform for open source IoT projects.
 
-<a class="anchor" id="getting_started"></a>
+<a class="anchor" id="getting-started"></a>
 <span>&nbsp;</span>
 
 ###Getting Started
+
+<a class="anchor" id="start-build"></a>
 
 <br/>**Linux Build Environment**
 
@@ -91,7 +144,7 @@ sudo yum install gcc gcc-c++ ncurses-devel zlib-devel patch  perl\(Data::Dumper\
 
  - Ubuntu Wily Werewolf 15.10 is known to have issues building the forked version of OpenWRT used in this project. Use version 15.04 or another version of Linux.
 
-<a class="anchor" id="security_first"></a>
+<a class="anchor" id="security-first"></a>
 <span>&nbsp;</span>
 
 ###Security First
@@ -100,7 +153,10 @@ Comprehensive security is a primary concern of IoT applications. This project ut
 
 The first step is to generate a self-signed Certificate Authority (CA) which will be built into the A140808 client device, smart phone client devices (TODO: doc custom smartphone CA), as well as the server. This approach allows us to sign our own certificates and establish a tight client-server security contract extremely resistant to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">man-in-the-middle-attacks</a>. Not only is this approach free, if properly deployed, it can be more secure than using a 3rd party CA that is susceptible to <a href="https://en.wikipedia.org/wiki/DigiNotar" target="_blank">hacking</a> or <a href="https://googleonlinesecurity.blogspot.com/2015/03/maintaining-digital-certificate-security.html" target="_blank">improper management</a>, or <a href="http://www.pcworld.com/article/249510/trustwave_admits_issuing_maninthemiddle_digital_certificate_mozilla_debates_punishment.html" target="_blank">poor judgement</a>. However, it is important to note that the certificate strategy does not preclude the use of certificates signed by well-known CAs.
 
-<br/>**Generate the Certificate Authority**
+<a class="anchor" id="security-gen-ca"></a>
+<span>&nbsp;</span>
+
+**Generate the Certificate Authority**
 
 If you are comfortable generating your own self-signed CA and a certificate signed by this CA, do so now. Alternatively, you can use the two helper scripts gen_ca.sh and gen_cert.sh to simplify this process. Begin by downloading the scripts to a Linux machine:
 
@@ -123,7 +179,9 @@ When the script completes, it will emit the name of the public and private CA ke
 --> generated ca private key:  acme-co_ca_private
 {% endhighlight %}
 
-**Generate the Certificate**
+<a class="anchor" id="security-sign-cert"></a>
+
+<br/>**Generate and Sign the Certificate**
 
 The certificate that will be used to encrypt the websocket and https traffic to the web server requires specific information. It is not necessary to generate the certificate public / private key pair at this time, but if the web server domain name(s) are known, it is a convenient time to do so now using the gen_cert.sh script.
 
@@ -149,7 +207,9 @@ In the next step, the A140808 device image will be built and the public CA file(
 device_a140808-master/hlk-rm04/ca_certs
 {% endhighlight %}
 
-**Certificate Review**
+<a class="anchor" id="security-cert-review"></a>
+
+<br/>**Certificate Review**
 
 In summary, the following certificate files and their use are as follows:
 
@@ -175,10 +235,12 @@ In summary, the following certificate files and their use are as follows:
 
 Make a note of where these files are located as they will be used in the next steps to build the A140808 firmware and will be deployed with the Nginx web server Docker container.
 
-<a class="anchor" id="building_firmware"></a>
+<a class="anchor" id="building-firmware"></a>
 <span>&nbsp;</span>
 
 ###Building the Firmware
+
+<a class="anchor" id="bfirm-repo"></a>
 
 <br/>**Project Repository**
 
@@ -202,6 +264,7 @@ drwxrwxr-x 5 ec2-user ec2-user 4096 Oct  8 14:26 hlk-rm04
 
 Executing make in the <code>device_a140808-master</code> directory will build both projects, or you can descend into either directory and execute <code>make</code> to build that project alone.
 
+<a class="anchor" id="bfirm-atmega"></a>
 
 <br/>**Building the Atmel ATmega32A Firmware**
 
@@ -226,6 +289,8 @@ Switch to the <code>device_a140808-master/avr</code> directory and type <code>ma
 
 In a subsequent section, the source files and theory of operation will be discussed in greater detail. However, at this point this is all that is needed to be able to flash the ATmega32A device. Building the HLK-RM04 device is up next.
 
+<a class="anchor" id="bfirm-hlmrm04"></a>
+
 <br/>**Building the Atmel HLK-RM04 Firmware**
 
 The Hi-Link HLK-RM04 module runs OpenWRT Linux. Additional information on OpenWRT and the Hi-Link device can be found on the OpenWRT wiki. Before building the firmware, the CA certificates build previously need to be copied to the project directory to be included in the resulting firmware image. Change to the device_a140808-master/hlk-rm04 directory and list the files.
@@ -240,9 +305,13 @@ drwxrwxr-x 15 ec2-user ec2-user 4096 Oct 23 12:18 openwrt-master
 drwxrwxr-x  5 ec2-user ec2-user 4096 Oct 23 10:03 tools
 {% endhighlight %}
 
+<a class="anchor" id="bfirm-copy-ca"></a>
+
 **Copy CA Public Certificates**
 
 Take note of the <code>ca_certs</code> directory which is the location where the CA certificate that were generated earlier belong. Note that the firmware image only requires the public CA file(s). The build script will copy all files ending in <code>_ca_public.cer</code> to the firmware image so following this naming convention is required.
+
+<a class="anchor" id="bfirm-ssh-access"></a>
 
 <br/>**SSH Access**
 
@@ -275,6 +344,8 @@ ssh certificate access, use existing cert: sshcert=<filespec>
 
 After the build finishes successfully, the firmware file <code>openwrt-ramips-rt305x-hlk-rm04-squashfs-sysupgrade.bin</code> will be placed into the bin directory. For details on the sysupgrade.bin file, refer to the <a href="http://wiki.openwrt.org/doc/howto/generic.sysupgrade" target="_blank">OpenwWRT wiki</a>. The sysupgrade file does not include a bootloader, so it can only be used to update an already running A140808 device. In the later sections of the documentation, instructions for doing so are included. In the case of a new device, it is necessary to build a full firmware image which takes a few more steps.
 
+<a class="anchor" id="bfirm-uboot"></a>
+
 <br/>**Adding u-boot**
 
 In order to be able to flash the device using a flash programmer, a complete firmware image file is required. In this case, the u-boot that ships with the HLK-RM04 can be used in conjunction with the MAC addresses printed on the front of the device (Figure 5).
@@ -302,10 +373,12 @@ The serial number is a nine character alphanumeric code following the underscore
 
 The firmware generation for the HLM-RM04 is now complete. In the next section the firmware for the two chips will be written to their respective devices.
 
-<a class="anchor" id="flashing_firmware"></a>
+<a class="anchor" id="flashing-firmware"></a>
 <span>&nbsp;</span>
 
 ###Flashing the Firmware
+
+<a class="anchor" id="ffirm-programmers"></a>
 
 <br/>**Programmers**
 
@@ -317,11 +390,11 @@ An added bonus of the Minipro TL866A model is that it has a six pin ICSP program
 
 **Note:** There are two models of the MiniPro TL866: The TL866A provides support for flashing Atmel chips via a six pin ICSP programming interface on the front. The less expensive TL866CS model does not include this ICSP interface and thus will require a second programmer for the Atmel device such as the AVRISP mkII.
 
-<br/>**Atmel ATmega32A Programming with AVRISP mkII**
+<a class="anchor" id="ffirm-avrisp"></a>
 
-<p style="margin: 0"><span>&nbsp;</span></p>
+<br/>**AVRISP mkII Wiring Harness**
 
-The Atmel AVRISP mkII programmer uses Atmel’s AVRISP pinout (Figure 6).
+The Atmel AVRISP mkII programmer pinout (Figure 6).
 
 <p style="margin: 0"><span>&nbsp;</span></p>
 <center>
@@ -336,7 +409,7 @@ The Atmel AVRISP mkII programmer uses Atmel’s AVRISP pinout (Figure 6).
 
 <span>&nbsp;</span>
 
-The A140808 proprietary ICSP programming header pinout (Figure 7).
+The proprietary A140808 ICSP programming header pinout (Figure 7).
 
 <p style="margin: 0"><span>&nbsp;</span></p>
 <center>
@@ -379,7 +452,9 @@ The completed conversion is shown in Figure 8. Notice that in this case heat shr
 
 Another approach is to use jumper wires for a one-time patch connection. It is worth noting that most off-the-shelf jumper wires are designed for use with breadboards and their pins are very narrow in diameter. The sockets of the female headers are designed to mate with square pin IDC type pins.  Schmartboard Inc. makes jumper wires with these IDC square pin connectors. <a href="http://schmartboard.com/schmartboard-qty-10-7-male-jumpers" target="_blank">Schmartboard part number 920-0099-01</a> is a 10 pack of 7” jumpers that work very well in this application. This part can be sourced from <a href="http://www.mouser.com/search/ProductDetail.aspx?R=0virtualkey0virtualkey920-0099-01" target="_blank">Mouser Electronics</a>.
 
-<br/>**Autoelectric MiniPro TL866A**
+<a class="anchor" id="ffirm-minipro"></a>
+
+<br/>**Autoelectric MiniPro TL866A Wiring Harness**
 
 The Autoelectric MiniPro TL866A programmer is two programmers in one. The TL866 “A” model has a six pin ICSP programming header that is very easy to reconfigure for programming the A140808. The pinout of the MiniPro ICSP interface (Figure 9) reveals that pins one and three are swapped between it and the A140808 device (compare with Figure 7). In this case, removing the connections from the MiniPro linear header and placing them in a 2x3 IDC housing (DigiKey 952-2031-ND) and changing the gender (DigiKey 929665-02-03-ND) is all that that is required.
 
@@ -413,6 +488,8 @@ The completed cable modification is shown in Figure 10.
 </table></center>
 <span>&nbsp;</span>
 
+<a class="anchor" id="ffirm-flashing-atmega"></a>
+
 <br/>**Flashing the Firmware**
 
 Connect the desired Atmel programmer to the header closer to the relays taking care to orient pin 1 properly (see Figure 8). The A140808 device needs to be powered on via an external power source in order for programming to work. Once all connections are made and the device is powered on, use one of the following programming commands. 
@@ -433,6 +510,8 @@ make mp-program
 {% endhighlight %}
 
 When the command finishes successfully, the Atmel programming is complete.
+
+<a class="anchor" id="ffirm-flashing-hlkrm04"></a>
 
 <br/>**Flashing the HiLink HLK-RM04**
 
@@ -491,7 +570,7 @@ make program flash=W25Q32BV image=bin/a140808_akbmkzh80.bin
 
 Once the command successfully completes, the device is ready to boot. Insert the HLK-RM04 daughter card back into the A140808 main board. The pins are offset which prevents the device from being put in backwards, however, take care as to not misalign the pins along the socket.
 
-<a class="anchor" id="booting_ssh"></a>
+<a class="anchor" id="booting-ssh"></a>
 <span>&nbsp;</span>
 
 ###Booting and SSH
@@ -521,14 +600,14 @@ Enter 'help' for a list of built-in commands.
 root@a140808:~#</code></pre></figure>
 
 
-<a class="anchor" id="building_webserver"></a>
+<a class="anchor" id="building-webserver"></a>
 <span>&nbsp;</span>
 
 ###Building the Webserver
 
 Bacon ipsum dolor amet turkey jerky rump tri-tip spare ribs. Cupim brisket landjaeger turkey. Picanha alcatra filet mignon meatball. Venison tail drumstick, tri-tip pork rump fatback spare ribs kevin. Sausage landjaeger boudin, rump bresaola prosciutto pork belly. Meatloaf short loin t-bone, alcatra tri-tip fatback pig ham.
 
-<a class="anchor" id="building_android"></a>
+<a class="anchor" id="building-android"></a>
 <span>&nbsp;</span>
 
 ###Building Android
