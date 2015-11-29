@@ -1,5 +1,5 @@
 ---
-layout:     post
+layout:     post-toc
 title:      Hey Kids! Grow giant open source IoT controllers in your own basement!
 subtitle:   Using off-the-shelf industrial-grade commodity hardware for sophisticated Internet of Things applications.
 excerpt:    This is an open source project to connect an high durability but inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub.
@@ -9,17 +9,6 @@ date:       2015-11-02 05:24:42 -0500
 author:     John Clark
 categories: a140808 iot opensource
 ---
-
-###Table of Contents
-  * [Introduction](#introduction)
-  * [Getting Started](#getting_started)
-  * [Security First](#security_first)
-  * [Building the Firmware](#building_firmware)
-  * [Flashing the Firmware](#flashing_firmware)
-  * [Booting and SSH](#booting_ssh)
-  * [Building the Webserver](#building_webserver)
-  * [Building Android](#building android)
-  * [Conclusion](#conclusion)
 
 <a class="anchor" id="introduction"></a>
 <span>&nbsp;</span>

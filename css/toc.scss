@@ -1,0 +1,94 @@
+---
+---
+@charset "utf-8";
+
+#scrollspy {
+  margin-left: 70px;  
+}
+
+.affix {
+  top: 160px;
+}
+
+nav.toc {
+  padding: 20px;
+  outline: 1px solid #444;
+  width: 12em;
+}
+
+/* section */
+nav.toc .nav > .active > ul {
+  display: block;
+}
+/* collapsed subsection */
+nav.toc .nav .nav {
+  display: none;
+  padding-bottom: 10px;
+}
+
+/* unselected list item */
+nav.toc .nav > li > a {
+  display: block;
+  padding: 4px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #767676;
+}
+.back-to-top a {
+  display: block;
+  padding: 6px 20px 2px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #767676;
+}
+.back-to-top a:hover {
+  color: #0044cc;
+  text-decoration: none;
+}
+.back-to-top a span {
+  color: transparent;
+}
+.back-to-top a:hover span {
+  color: #0044cc;
+}
+/* unselected list sub-item */
+nav.toc .nav .nav > li > a {
+  padding-bottom: 1px;
+  padding-top: 1px;
+  font-weight: 400;
+  font-size: 13px;
+  padding-left: 30px;
+}
+
+/* unselected list item : hover */
+nav.toc .nav > li > a:focus,
+nav.toc .nav > li > a:hover {
+  padding-left: 19px;
+  color: #0044cc;
+  text-decoration: none;
+  background-color: transparent;
+  border-left: 1px solid #0044cc;
+}
+/* unselected list sub-item : hover */
+nav.toc .nav .nav > li > a:focus,
+nav.toc .nav .nav > li > a:hover {
+  padding-left: 29px;
+}
+
+/* selected list item */
+nav.toc .nav > .active:focus > a, 
+nav.toc .nav > .active:hover > a, 
+nav.toc .nav > .active > a {
+  padding-left: 18px;
+  font-weight: 700;
+  color: #563D7C;
+  background-color: transparent;
+  border-left: 2px solid #563D7C;
+}
+/* selected list sub-item */
+nav.toc .nav .nav > .active:focus > a, 
+nav.toc .nav .nav > .active:hover > a,
+nav.toc .nav .nav > .active > a {
+  padding-left: 28px;
+  font-weight: 500;
+}
