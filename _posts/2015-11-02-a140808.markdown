@@ -581,7 +581,7 @@ Once powered on, the red LED light on the HLK-RM04 should begin to blink as Linu
 nmap -sP 192.168.1.0/24 >/dev/null && arp -an | grep -i ac:a2:13:b5:4a:3e
 {% endhighlight %}
 
-Once the A140808 IP address is determined, use <code>ssh</code> to login to the device for final configuration. To login, use <code>root</code> for the userid and the password or certificate used in the [Building the Firmware](#building_firmware) step above.
+Once the A140808 IP address is determined, use <code>ssh</code> to login to the device for final configuration. To login, use <code>root</code> for the userid and the password or certificate used in the [Building the Firmware](#building-firmware) step above.
 
 <figure class="highlight"><pre style="background-color: #2a2a2a;"><code class="language-text" data-lang="text">$ ssh root@192.168.1.136
 root@192.168.1.136's password:
