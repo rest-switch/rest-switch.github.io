@@ -130,14 +130,14 @@ Ubuntu Trusty 14.04 requires the following prerequisites:
 
 {% highlight sh %}
 sudo apt-get update && sudo apt-get upgrade
-sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip git subversion docker
+sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip pv git subversion docker
 {% endhighlight %}
 
 Amazon Linux requires the following prerequisites:
 
 {% highlight sh %}
 sudo yum update
-sudo yum install gcc gcc-c++ ncurses-devel zlib-devel patch  perl\(Data::Dumper\) git subversion docker
+sudo yum install gcc gcc-c++ ncurses-devel zlib-devel pv patch perl\(Data::Dumper\) git subversion docker
 {% endhighlight %}
 
 **Known Issues**
