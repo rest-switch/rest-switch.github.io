@@ -1,13 +1,14 @@
 ---
-layout:     post-toc
-title:      Hey Kids! Grow giant open source IoT controllers in your own basement!
-subtitle:   Using off-the-shelf industrial-grade commodity hardware for sophisticated Internet of Things applications.
-excerpt:    This is an open source project to connect an high durability but inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub.
-image:      businessman.png
-image-px:   250
-date:       2015-11-02 05:24:42 -0500
-author:     John Clark
-categories: a140808 iot opensource
+layout:      post-toc
+title:       Hey Kids! Grow giant open source IoT controllers in your own basement!
+subtitle:    Using off-the-shelf industrial-grade commodity hardware for sophisticated Internet of Things applications.
+excerpt:     This is an open source project to connect an high durability but inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pubsub.
+image:       businessman.png
+image-px:    250
+date:        2015-11-02 05:24:42 -0500
+author:      John Clark
+author-link: https://github.com/inindev
+categories:  a140808 iot opensource
 toc: >
           <ul class="nav nav-stacked">
             <li>
@@ -55,6 +56,7 @@ toc: >
             <li><a href="#building-webserver">Building&nbsp;Webserver</a></li>
             <li><a href="#building-android">Building&nbsp;Android</a></li>
             <li><a href="#conclusion">Conclusion</a></li>
+            <li><a href="#comments">Comments</a></li>
           </ul>
 ---
 
@@ -605,7 +607,7 @@ root@a140808:~#</code></pre></figure>
 
 ###Building the Webserver
 
-The web server used in this project is <a href="http://nginx.org" target="_blank">Nginx</a>. The modular nature of Nginx lends itself well to not only serving html content, but it can also provide a rock-solid publish-subscribe facility through the use of <a href="https://br.linkedin.com/in/wandenberg-peixoto-52582a8" target="_blank">Wandenberg Peixoto’s</a> highly scalable <a href="https://github.com/wandenberg/nginx-push-stream-module" target="_blank">pushstream module</a>. Other benefits of Nginx include extremely easy SSL setup and configuration as well as a wide range of other integration modules. While the overall solution was demonstrated to work equally well with both <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="http://redis.io/topics/pubsub" target="_blank">Redis</a>, the simplicity and overall completeness of Nginx edged out the competition for this application. It should be noted that all three are excellent and suitable technology choices, however. The entire Nginx deployment package is bundled using a <a href="https://www.docker.com" target="_blank">docker container</a> which greatly simplifies numerous potential configuration and installation pitfalls making the entire process nearly foolproof.
+The web server used in this project is <a href="http://nginx.org" target="_blank">Nginx</a>. The modular nature of Nginx lends itself well not only to serving html content, but it can also provide a rock-solid publish-subscribe facility through the use of the <a href="http://highscalability.com/blog/2014/4/28/how-disqus-went-realtime-with-165k-messages-per-second-and-l.html" target="_blank">highly scalable</a> and reliable <a href="https://github.com/wandenberg/nginx-push-stream-module" target="_blank">push stream</a> module by <a href="https://br.linkedin.com/in/wandenberg-peixoto-52582a8" target="_blank">Wandenberg Peixoto</a>. Other benefits of Nginx include extremely easy SSL setup and configuration as well as a wide range of other integration modules. While the overall solution was also demonstrated to very work well with both <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="http://redis.io/topics/pubsub" target="_blank">Redis</a>, the simplicity and overall completeness of the Nginx solution edged out the competition for the goals of this application. The entire Nginx deployment package is bundled using a <a href="http://docs.docker.com/engine/userguide/dockerimages" target="_blank">docker image</a> which greatly simplifies numerous potential configuration and installation pitfalls making the entire process nearly foolproof.
 
 To get started, we need to understand the mechanisms at play in the overall solution. When the A140808 device boots up, a service starts on the device which attempts to establish an SSL websocket connection to a pub-sub host. The identity of this cloud host is stored in <code>/etc/config/cloudcfg</code> configuration file on the device. The SSL connection will be trusted as the public key of our own certificate authority (CA) was installed to the <code>/etc/ssl/certs</code> directory when the device firmware was being built (see <a href="#security-first">Security First</a>). This design allows the device to become a command and control interface without any special firewall configuration, nor the need for any holes to be punched. The result is a site configuration that is no more difficult than establishing an ethernet connection and powering-on the device.
 
@@ -735,6 +737,22 @@ Bacon ipsum dolor amet landjaeger drumstick chicken jerky brisket shankle pancet
 
 Bacon ipsum dolor amet tail boudin shank ball tip. Spare ribs capicola flank meatball picanha pork loin jowl swine drumstick tri-tip t-bone sirloin. Pastrami ribeye tri-tip, sausage ham tenderloin rump. Pork chop bacon pork loin biltong picanha short ribs alcatra. Venison pork loin filet mignon jerky, short ribs pastrami prosciutto shoulder tongue bacon sirloin. Tongue sausage capicola flank salami venison short ribs chicken shank fatback sirloin picanha frankfurter andouille. Shankle corned beef brisket fatback biltong capicola, pastrami pork.
 
+<a class="anchor" id="comments"></a>
 <span>&nbsp;</span>
 
+###Comments
 
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = "http://www.rest-switch.com/a140808/iot/opensource/2015/11/02/a140808.html";
+        this.page.identifier = "a140808-m";
+    };
+    (function() {
+        var d = document, s = d.createElement('script');
+        s.src = '//restswitch.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>

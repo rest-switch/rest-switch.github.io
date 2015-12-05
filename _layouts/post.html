@@ -13,7 +13,7 @@ layout: default
             {% if page.subtitle %}<p><em>{{ page.subtitle }}</em></p>{% endif %}
             {% if page.author %}
             <p class="post-meta" style="font-size: 85%">
-              <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author }}</span></span><br />
+              <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{% if page.author-link %}<a href="{{ page.author-link }}" target="_blank">{% endif %}{{ page.author }}{% if page.author-link %}</a>{% endif %}</span></span><br />
               <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%B %-d, %Y" }}</time>
             </p>
           {% endif %}

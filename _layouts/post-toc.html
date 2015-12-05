@@ -26,7 +26,7 @@
               {% if page.subtitle %}<p><em>{{ page.subtitle }}</em></p>{% endif %}
               {% if page.author %}
               <p class="post-meta" style="font-size: 85%">
-                <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author }}</span></span><br />
+                <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{% if page.author-link %}<a href="{{ page.author-link }}" target="_blank">{% endif %}{{ page.author }}{% if page.author-link %}</a>{% endif %}</span></span><br />
                 <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%B %-d, %Y" }}</time>
               </p>
             {% endif %}
@@ -69,6 +69,16 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script id="dsq-count-scr" src="//restswitch.disqus.com/count.js" async></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-71053082-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
 </html>
 
