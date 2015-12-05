@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://www.rest-switch.com/a140808/iot/opensource/2015/11/02/a140808.html</loc>
+    <changefreq>always</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://www.rest-switch.com/a140808/iot/opensource/2015/11/01/welcome.html</loc>
+    <changefreq>always</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>http://www.rest-switch.com/</loc>
+    <changefreq>always</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>http://www.rest-switch.com/posts.html</loc>
+    <changefreq>always</changefreq>
+    <priority>0.2</priority>
+  </url>
+</urlset>
