@@ -605,7 +605,121 @@ root@a140808:~#</code></pre></figure>
 
 ###Building the Webserver
 
-Bacon ipsum dolor amet turkey jerky rump tri-tip spare ribs. Cupim brisket landjaeger turkey. Picanha alcatra filet mignon meatball. Venison tail drumstick, tri-tip pork rump fatback spare ribs kevin. Sausage landjaeger boudin, rump bresaola prosciutto pork belly. Meatloaf short loin t-bone, alcatra tri-tip fatback pig ham.
+The web server used in this project is <a href="http://nginx.org" target="_blank">Nginx</a>. The modular nature of Nginx lends itself well to not only serving html content, but it can also provide a rock-solid publish-subscribe facility through the use of <a href="https://br.linkedin.com/in/wandenberg-peixoto-52582a8" target="_blank">Wandenberg Peixoto’s</a> highly scalable <a href="https://github.com/wandenberg/nginx-push-stream-module" target="_blank">pushstream module</a>. Other benefits of Nginx include extremely easy SSL setup and configuration as well as a wide range of other integration modules. While the overall solution was demonstrated to work equally well with both <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="http://redis.io/topics/pubsub" target="_blank">Redis</a>, the simplicity and overall completeness of Nginx edged out the competition for this application. It should be noted that all three are excellent and suitable technology choices, however. The entire Nginx deployment package is bundled using a <a href="https://www.docker.com" target="_blank">docker container</a> which greatly simplifies numerous potential configuration and installation pitfalls making the entire process nearly foolproof.
+
+To get started, we need to understand the mechanisms at play in the overall solution. When the A140808 device boots up, a service starts on the device which attempts to establish an SSL websocket connection to a pub-sub host. The identity of this cloud host is stored in <code>/etc/config/cloudcfg</code> configuration file on the device. The SSL connection will be trusted as the public key of our own certificate authority (CA) was installed to the <code>/etc/ssl/certs</code> directory when the device firmware was being built (see <a href="#security-first">Security First</a>). This design allows the device to become a command and control interface without any special firewall configuration, nor the need for any holes to be punched. The result is a site configuration that is no more difficult than establishing an ethernet connection and powering-on the device.
+
+In addition to the pub-sub capability described above, the Nginx solution presented here also provides an html based control panel secured with <a href="https://www.nginx.com/resources/admin-guide/restricting-access" target="_blank">auth basic</a> over SSL. While it is possible to configure a database to handle more complex authentication scenarios and multi-tenant capabilities, such solutions will not be presented here for the sake of simplicity.
+
+<span style="color: #f00">Note: Ubuntu Wily Werewolf 15.10 is known to have issues building this docker image.</span>
+
+Begin by downloading the server_nginx repository and unpack:
+
+{% highlight sh %}
+$ wget -O server_nginx.tar.gz https://github.com/rest-switch/server_nginx/archive/master.tar.gz
+$ tar xzvf server_nginx.tar.gz
+$ cd server_nginx-master
+{% endhighlight %}
+
+The docker directory contains all of the files needed to build the deployment package and the <code>rs-docker-util.sh</code> utility script used to help package and deploy the generated docker container (more on the use of this script later).
+
+{% highlight sh %}
+[server_nginx-master]$ ls -al
+drwxrwxr-x 3 johnc johnc 4.0K Sep 30 22:34 docker
+-rw-rw-r-- 1 johnc johnc 6.3K Sep 30 22:34 Makefile
+-rwxrwxr-x 1 johnc johnc 8.5K Sep 30 22:34 rs-docker-util.sh
+{% endhighlight %}
+
+Before building the project, the public certificate chain (which is the public root CA and the public certificate together) need to be placed in the docker directory along with the private key of the certificate as shown below. These certificates were created in the <a href="#security-first">Security First</a> section above. This example assumes these certs are stored in the home directory:
+
+{% highlight sh %}
+[server_nginx-master]$ cp ~/certs/acme-co_cert_chain_public.cer docker/cert-chain-public.pem
+[server_nginx-master]$ cp ~/certs/acme-co_cert_private docker/cert-private.pem
+{% endhighlight %}
+
+Once the certificates are in place, start the build by typing <code>make</code>. The build process begins by attempting to download the official centos 7 image for docker. After the image is downloaded, it is automatically updated via a <code>yum update</code> command then Nginx and its modules are built. In this case, the Nginx modules are the wandenberg pushstream module, and a custom sha256-hmac <a href="https://github.com/rest-switch/server_nginx/tree/master/docker/docker_build/ngx_hmac_auth_module" target="_blank">signed url authentication module</a> which is used to authenticate requests from the Android client. The benefit of single-use signed-urls in this application is that they allow for simple one-shot messages to be passed in the clear without all of the <a href="http://www.infoq.com/articles/HTTPS-Connection-Jeff-Moser" target="_blank">setup overhead</a> of an encrypted connection. Considering the latency of the mobile phone connection over a carrier or wifi network, shaving as many round-trips off really adds up quickly and provides for a more responsive user interface. More on this later.
+
+If everything goes well, the build will complete after a few minutes:
+
+{% highlight sh %}
+. . .
+
+Step 19 : CMD /usr/sbin/nginx
+ ---> Using cache
+ ---> 20c096a1a447
+Successfully built 20c096a1a447
+
+the docker image is now built
+ - to run this image locally, run: "make run"
+ - to run this image remotely, run: "make deploy"
+
+{% endhighlight %}
+
+At this point the docker image is complete. Type <code>make show</code> to see result of the build process:
+
+{% highlight sh %}
+[server_nginx-master]$ make show
+REPOSITORY                TAG       IMAGE ID       CREATED          VIRTUAL SIZE
+restswitch/server_nginx   latest    8e2dd31572da   27 seconds ago   291.9 MB
+restswitch/server_nginx   101       8e2dd31572da   27 seconds ago   291.9 MB
+centos                    centos7   ce20c473cd8a   7 weeks ago      172.3 MB
+--------------------------------------------------------------------------------
+CONTAINER ID      IMAGE      COMMAND      CREATED      STATUS      PORTS      NAMES
+{% endhighlight %}
+
+If the build fails, it may be necessary to clean up partially built artifacts that were left behind. The <code>make clean</code> command attempts to do just this, but it cannot be too aggressive as other docker images and containers may exist on the build system which do not belong to this build process. A more aggressive option is the <code>make distclean</code> command. If manual cleanup is required, the docker image removal command is <code>docker rmi &lt;image id&gt;</code> and the docker container removal command is <code>docker rm &lt;container id&gt;</code>. If you experience repeated build failures, try deploying an Amazon Linux AMI and build the image this way.
+
+Assuming all went well with the build, the image is ready to be run locally or packaged for deployment on a remote server. To run locally, use the <code>make run</code> command. To package the image for deploying remotely, use the <code>make deploy</code> command. The image deployment process will take a couple of minutes:
+
+{% highlight sh %}
+[server_Nginx-master]$ make deploy
+deploying the latest docker image, please wait...
+ 289MiB 0:02:40 [1.81MiB/s] [=====================================================>] 100%
+docker image packaging now complete: restswitch_web_docker_8e2dd31572da.tar.xz
+use the rs-docker-util.sh script to help manage this image:
+-rwxrwxr-x 1 ec2-user ec2-user 8644 Oct  1 02:34 rs-docker-util.sh
+
+{% endhighlight %}
+
+As indicated in the output message, the deployment file in this case is <code>restswitch_web_docker_8e2dd31572da.tar.xz</code>  This file in conjunction with the <code>rs-docker-util.sh</code> file are the only two files needed to deploy the docker image remotely.
+
+At this point, take a moment to see what all the <code>rs-docker-util.sh</code> script provides. Many of the commands found in the Makefile are duplicated in this script. This is so make is not required on the remote deployment machine. Use <code>./rs-docker-util.sh --help</code> to display the command-line options:
+
+{% highlight sh %}
+[server_nginx-master]$ ./rs-docker-util.sh --help
+
+Usage:
+ rs-docker-util.sh <command>
+
+Commands:
+ clean                    remove everything but the restswitch_webserver docker image
+ create [auto]            create [an autostart on boot] restswitch_webserver docker container
+ debug                    enter a the running container or start a container using bash
+ distclean                remove everything
+ enter                    enter a running container (will autocreate and start if needed)
+ load <tar.xz>            load an existing image
+ run                      alias for start
+ sethash <email> <pass>   set credentials for nginx.conf auth hash
+ setpass <userid> <pass>  set credentials for /secure website
+ shell                    alias for enter
+ show                     show docker image and container information
+ start                    start restswitch_webserver docker container (will autocreate if needed)
+ stop                     stop restswitch_webserver docker container
+ term                     alias for enter
+ terminal                 alias for enter
+ tidy                     similar to clean, but does not remove container
+
+{% endhighlight %}
+
+One command worth noting is the <code>enter</code> command. Typing <code>./rs-docker-util.sh enter</code> will run a bash shell in the running container. This is handy for getting inside to review log files and to change configuration. Also notice the <code>sethash</code> and <code>setpass</code> commands: these command are used to configure Nginx settings without entering the container (more on this later).
+
+At this point we are ready to create a docker container from the docker image created above. The Nginx instance running within the container uses the standard ports 80 for http and 443 for https. These ports can be mapped to any value by docker when the container is created. These docker port values can be changed by editing the <code>rs-docker-util.sh</code> file. It is worth noting that the ability to create a container also exists in the <code>Makefile</code> via the <code>make start</code> or <code>make run</code> commands, and these values can equally be edited in this file as well.
+
+{% highlight sh %}
+EXPOSED_HTTP_PORT=80
+EXPOSED_HTTPS_PORT=443
+{% endhighlight %}
+
 
 <a class="anchor" id="building-android"></a>
 <span>&nbsp;</span>
