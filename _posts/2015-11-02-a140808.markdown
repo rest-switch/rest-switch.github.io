@@ -669,12 +669,19 @@ centos                    centos7   ce20c473cd8a   7 weeks ago      172.3 MB
 CONTAINER ID      IMAGE      COMMAND      CREATED      STATUS      PORTS      NAMES
 {% endhighlight %}
 
-If the build fails, it may be necessary to clean up partially built artifacts that were left behind. The <code>make clean</code> command attempts to do just this, but it cannot be too aggressive as other docker images and containers may exist on the build system which do not belong to this build process. A more aggressive option is the <code>make distclean</code> command. If manual cleanup is required, the docker image removal command is <code>docker rmi &lt;image id&gt;</code> and the docker container removal command is <code>docker rm &lt;container id&gt;</code>. If you experience repeated build failures, try deploying an Amazon Linux AMI and build the image this way.
+If the build fails, it may be necessary to clean up partially built artifacts that were left behind. The <code>make clean</code> command attempts to do just this, but it cannot be too aggressive as other docker images and containers may exist on the build system which do not belong to this build process. A more aggressive option is the <code>make distclean</code> command. If manual cleanup is required, the docker image removal command is <code>docker rmi &lt;image id&gt;</code> and the docker container removal command is <code>docker rm &lt;container id&gt;</code>. If you experience repeated build failures, try deploying an Amazon Linux AMI and build the image this way. Assuming all went well with the build, the image is ready to be run locally or packaged for deployment on a remote server. 
 
-Assuming all went well with the build, the image is ready to be run locally or packaged for deployment on a remote server. To run locally, use the <code>make run</code> command. To package the image for deploying remotely, use the <code>make deploy</code> command. The image deployment process will take a couple of minutes:
+Now is the time to decide if we want to use the stanard web ports or remap them. The Nginx instance running within the container always uses the standard ports 80 for http and 443 for https. These ports can be mapped to any value by docker when the container is created. These docker port values can be changed by editing the <code>Makefile</code> or the <code>rs-docker-util.sh</code> file (depending if we are deploying locally or remotely).
 
 {% highlight sh %}
-[server_Nginx-master]$ make deploy
+EXPOSED_HTTP_PORT=80
+EXPOSED_HTTPS_PORT=443
+{% endhighlight %}
+
+To run locally, execute the <code>make run</code> command. To deploy remotely, use the <code>make deploy</code> command. The image deployment process will take a couple of minutes as the Linux filesystem is compressed into a tar archive:
+
+{% highlight sh %}
+[server_nginx-master]$ make deploy
 deploying the latest docker image, please wait...
  289MiB 0:02:40 [1.81MiB/s] [=====================================================>] 100%
 docker image packaging now complete: restswitch_web_docker_8e2dd31572da.tar.xz
@@ -683,9 +690,9 @@ use the rs-docker-util.sh script to help manage this image:
 
 {% endhighlight %}
 
-As indicated in the output message, the deployment file in this case is <code>restswitch_web_docker_8e2dd31572da.tar.xz</code>  This file in conjunction with the <code>rs-docker-util.sh</code> file are the only two files needed to deploy the docker image remotely.
+As indicated in the output message above, the deployment file in this case is <code>restswitch_web_docker_8e2dd31572da.tar.xz</code>  This file ius used in conjunction with the <code>rs-docker-util.sh</code> file. These are the only two files needed to deploy the docker image remotely. Copy both of these files to the remote server.
 
-At this point, take a moment to see what all the <code>rs-docker-util.sh</code> script provides. Many of the commands found in the Makefile are duplicated in this script. This is so make is not required on the remote deployment machine. Use <code>./rs-docker-util.sh --help</code> to display the command-line options:
+At this point, take a moment to see what all the <code>rs-docker-util.sh</code> script provides. Most of the commands found in the Makefile are duplicated in this script. This is so make is not required to be installed on the remote deployment machine. Use <code>./rs-docker-util.sh --help</code> to display the command-line options:
 
 {% highlight sh %}
 [server_nginx-master]$ ./rs-docker-util.sh --help
@@ -713,14 +720,11 @@ Commands:
 
 {% endhighlight %}
 
-One command worth noting is the <code>enter</code> command. Typing <code>./rs-docker-util.sh enter</code> will run a bash shell in the running container. This is handy for getting inside to review log files and to change configuration. Also notice the <code>sethash</code> and <code>setpass</code> commands: these command are used to configure Nginx settings without entering the container (more on this later).
+One command worth noting is the <code>./rs-docker-util.sh enter</code> command. This command will run a bash shell in the running container allowing ssh-like access to the instance. This is handy for getting inside to review log files or to change configuration. Also notice the <code>sethash</code> and <code>setpass</code> commands: these command are used to configure Nginx settings without entering the container (more on this later).
 
-At this point we are ready to create a docker container from the docker image created above. The Nginx instance running within the container uses the standard ports 80 for http and 443 for https. These ports can be mapped to any value by docker when the container is created. These docker port values can be changed by editing the <code>rs-docker-util.sh</code> file. It is worth noting that the ability to create a container also exists in the <code>Makefile</code> via the <code>make start</code> or <code>make run</code> commands, and these values can equally be edited in this file as well.
+After the <code>restswitch_web_docker_8e2dd31572da.tar.xz</code> and <code>rs-docker-util.sh</code> files have been copied to the remote deployment machine, we are ready to create a docker container from the compressed docker image. Type <code./>rs-docker-util.sh ...</code>
 
-{% highlight sh %}
-EXPOSED_HTTP_PORT=80
-EXPOSED_HTTPS_PORT=443
-{% endhighlight %}
+
 
 
 <a class="anchor" id="building-android"></a>
