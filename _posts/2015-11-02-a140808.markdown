@@ -53,7 +53,17 @@ toc: >
               </ul>
             </li>
             <li><a href="#booting-ssh">Booting&nbsp;and&nbsp;SSH</a></li>
-            <li><a href="#building-webserver">Building&nbsp;Webserver</a></li>
+            <li><a href="#building-webserver">Building&nbsp;Webserver</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#bweb-certs">Configuring&nbsp;Certs</a></li>
+                <li><a href="#bweb-build-docker">Build&nbsp;Docker</a></li>
+                <li><a href="#bweb-docker-ports">Docker&nbsp;Ports</a></li>
+                <li><a href="#bweb-package-docker">Docker&nbsp;Image</a></li>
+                <li><a href="#bweb-run-docker">Docker&nbsp;Container</a></li>
+                <li><a href="#bweb-config-pw">Configure&nbsp;Passwords</a></li>
+              </ul>
+            </li>
+            <li><a href="#a140808-setup">A140808&nbsp;Setup</a></li>
             <li><a href="#building-android">Building&nbsp;Android</a></li>
             <li><a href="#conclusion">Conclusion</a></li>
             <li><a href="#comments">Comments</a></li>
@@ -71,7 +81,7 @@ This is an open source project to connect an high durability yet inexpensive 8 o
 
 **Physical Inspection**
 
-The device used in this project is available from AliExpress for approximately $65 at the time of this writing. It comes with no useful documentation and its factory configuration is of limited value. There is no model number, so I decided to call it the A140808 which encodes the fact that I first bought it in 2014 and it has 08 inputs and 08 outputs.
+The device used in this project is available from <a href="http://www.aliexpress.com/item/Free-shipping-KR-0808WIFI-S5A-wifi-version-8-into-8-out-of-relay-module/1945279388.html" target="_blank">AliExpress</a> for approximately $57 at the time of this writing. It comes with no useful documentation and its factory configuration is of limited value. There is no model number, so I decided to call it the A140808 which encodes the fact that it was the first project device (A) that I bought in 2014 and it has 08 inputs and 08 outputs.
 
 <span>&nbsp;</span>
 <center><table style="border-spacing: 10px; border-collapse: separate; font-size: 90%">
@@ -131,15 +141,19 @@ The makefiles and shell scripts for this project are written for Linux. If you a
 Ubuntu Trusty 14.04 requires the following prerequisites:
 
 {% highlight sh %}
-sudo apt-get update && sudo apt-get upgrade
-sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip pv git subversion docker
+$ sudo apt-get update && sudo apt-get upgrade
+$ sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip pv git subversion docker
+$ sudo usermod -G docker $USER
+$ newgrp docker
 {% endhighlight %}
 
 Amazon Linux requires the following prerequisites:
 
 {% highlight sh %}
-sudo yum update
-sudo yum install gcc gcc-c++ ncurses-devel zlib-devel pv patch perl\(Data::Dumper\) git subversion docker
+$ sudo yum update
+$ sudo yum install gcc gcc-c++ ncurses-devel zlib-devel pv patch perl\(Data::Dumper\) git subversion docker
+$ sudo usermod -G docker $USER
+$ newgrp docker
 {% endhighlight %}
 
 **Known Issues**
@@ -163,15 +177,15 @@ The first step is to generate a self-signed Certificate Authority (CA) which wil
 If you are comfortable generating your own self-signed CA and a certificate signed by this CA, do so now. Alternatively, you can use the two helper scripts gen_ca.sh and gen_cert.sh to simplify this process. Begin by downloading the scripts to a Linux machine:
 
 {% highlight sh %}
-wget -O certs.tar.gz https://github.com/rest-switch/stuff/archive/master.tar.gz
-tar xzvf certs.tar.gz
-cd stuff-master/certs
+$ wget -O certs.tar.gz https://github.com/rest-switch/stuff/archive/master.tar.gz
+$ tar xzvf certs.tar.gz
+$ cd stuff-master/certs
 {% endhighlight %}
 
 Generate the self-signed CA by specifying the CA organization name. The script will default to  a key length setting of 4096 bits and a 10 year expiration. Use the --help command line switch to view the syntax for overriding these default options.
 
 {% highlight sh %}
-    ./gen_ca.sh "Acme Co"
+$ ./gen_ca.sh "Acme Co"
 {% endhighlight %}
 
 When the script completes, it will emit the name of the public and private CA keys that were generated. This CA will be used to sign the certificate in the next step.
@@ -190,7 +204,7 @@ The certificate that will be used to encrypt the websocket and https traffic to 
 For example, to connect to the server using example.com, ws.example.com, and www.example.com, use the following syntax (see the --help command line switch to view all of the command line options):
 
 {% highlight sh %}
-./gen_cert.sh -o "Acme Co" -d example.com -a "example.com ws.example.com www.example.com" -c "San Diego" -s CA -u acme-co_ca_public.cer -v acme-co_ca_private
+$ ./gen_cert.sh -o "Acme Co" -d example.com -a "example.com ws.example.com www.example.com" -c "San Diego" -s CA -u acme-co_ca_public.cer -v acme-co_ca_private
 {% endhighlight %}
 
 When the script completes, it will emit the name of the public and private keys that were generated. For convenience, the script also emits a combined public certificate / CA chain file suitable for use with Nginx:
@@ -249,9 +263,9 @@ Make a note of where these files are located as they will be used in the next st
 Download the A140808 github repository and extract it:
 
 {% highlight sh %}
-wget -O device_a140808.tar.gz https://github.com/rest-switch/device_a140808/archive/master.tar.gz
-tar xzvf device_a140808.tar.gz
-cd device_a140808-master
+$ wget -O device_a140808.tar.gz https://github.com/rest-switch/device_a140808/archive/master.tar.gz
+$ tar xzvf device_a140808.tar.gz
+$ cd device_a140808-master
 {% endhighlight %}
 
 The repository contains two subdirectories. The avr directory contains the complete project for building the firmware for the Atmel ATmega32A. Likewise, the hlk-rm04 directory contains the complete project for building the firmware for the Hi-Link HLK-RM04 module.
@@ -321,12 +335,12 @@ Next, the type of SSH access for the device needs to be considered. It is also p
 
 On the command line, include one or more of the options desired. For example, to compile with password access and have the build process prompt (pmt) for the password, type:
 {% highlight sh %}
-make sshpw=pmt
+$ make sshpw=pmt
 {% endhighlight %}
 
 To configure a password directly (“mysecret” in this example) and to bundle a newly generated SSH cert file, type:
 {% highlight sh %}
-make sshpw=mysecret sshcert=gen
+$ make sshpw=mysecret sshcert=gen
 {% endhighlight %}
 
 Note that some options are mutually exclusive with each other. The full listing of options is as follows:
@@ -362,7 +376,7 @@ In order to be able to flash the device using a flash programmer, a complete fir
 Notice that the MAC addresses are consecutive. To specify a MAC address and generate the full image firmware, use the <code>make image mac=aabbccddeeff</code> command and specify the first MAC address listed on your device (the build script will assume the second address). For example:
 
 {% highlight sh %}
-make image mac=aca213b54a3e
+$ make image mac=aca213b54a3e
 {% endhighlight %}
 
 This will generate a full image firmware file with a unique serial number, for example:
@@ -501,14 +515,14 @@ Connect the desired Atmel programmer to the header closer to the relays taking c
 <p style="margin: 0"><span>&nbsp;</span></p>
 <p style="padding-left: 1em; margin: 0">To Select the AVRISP mkII:</p>
 {% highlight sh %}
-cd device_a140808-master/avr
-make avr-program
+$ cd device_a140808-master/avr
+$ make avr-program
 {% endhighlight %}
 
 <p style="padding-left: 1em; margin: 0">To Select the MiniPro TL866A:</p>
 {% highlight sh %}
-cd device_a140808-master/avr
-make mp-program
+$ cd device_a140808-master/avr
+$ make mp-program
 {% endhighlight %}
 
 When the command finishes successfully, the Atmel programming is complete.
@@ -564,8 +578,8 @@ Multiple matching parts will likely be shown, but only the base part without the
 <p style="padding-left: 1em; margin: 0">Once connected, the part is ready to program.</p>
 
 {% highlight sh %}
-cd device_a140808-master/hlk-rm04
-make program flash=W25Q32BV image=bin/a140808_akbmkzh80.bin
+$ cd device_a140808-master/hlk-rm04
+$ make program flash=W25Q32BV image=bin/a140808_akbmkzh80.bin
 {% endhighlight %}
 
 **Note:** The actual <code>image=</code> filename is build-specific and will be different than the one shown here.
@@ -580,7 +594,7 @@ Once the command successfully completes, the device is ready to boot. Insert the
 Once powered on, the red LED light on the HLK-RM04 should begin to blink as Linux begins to boot. Once the kernel is loaded the network indicator lights will begin to flash. The device is setup to automatically accept a DHCP issued TCP/IP address, so it is a simple matter to scan the network to find it. Perhaps the easiest way to find the IP address associated with the MAC address used above (see Figure 5) is to search the logs of the network DCHP server. Other options include network scanning apps such as Fing for Android, Lan Scan for OSX, or nmap for Linux:
 
 {% highlight sh %}
-nmap -sP 192.168.1.0/24 >/dev/null && arp -an | grep -i ac:a2:13:b5:4a:3e
+$ nmap -sP 192.168.1.0/24 >/dev/null && arp -an | grep -i ac:a2:13:b5:4a:3e
 {% endhighlight %}
 
 Once the A140808 IP address is determined, use <code>ssh</code> to login to the device for final configuration. To login, use <code>root</code> for the userid and the password or certificate used in the [Building the Firmware](#building-firmware) step above.
@@ -609,11 +623,11 @@ root@a140808:~#</code></pre></figure>
 
 The web server used in this project is <a href="http://nginx.org" target="_blank">Nginx</a>. The modular nature of Nginx lends itself well not only to serving html content, but it can also provide a rock-solid publish-subscribe facility through the use of the <a href="http://highscalability.com/blog/2014/4/28/how-disqus-went-realtime-with-165k-messages-per-second-and-l.html" target="_blank">highly scalable</a> and reliable <a href="https://github.com/wandenberg/nginx-push-stream-module" target="_blank">push stream</a> module by <a href="https://br.linkedin.com/in/wandenberg-peixoto-52582a8" target="_blank">Wandenberg Peixoto</a>. Other benefits of Nginx include extremely easy SSL setup and configuration as well as a wide range of other integration modules. While the overall solution was also demonstrated to very work well with both <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="http://redis.io/topics/pubsub" target="_blank">Redis</a>, the simplicity and overall completeness of the Nginx solution edged out the competition for the goals of this application. The entire Nginx deployment package is bundled using a <a href="http://docs.docker.com/engine/userguide/dockerimages" target="_blank">docker image</a> which greatly simplifies numerous potential configuration and installation pitfalls making the entire process nearly foolproof.
 
-To get started, we need to understand the mechanisms at play in the overall solution. When the A140808 device boots up, a service starts on the device which attempts to establish an SSL websocket connection to a pub-sub host. The identity of this cloud host is stored in <code>/etc/config/cloudcfg</code> configuration file on the device. The SSL connection will be trusted as the public key of our own certificate authority (CA) was installed to the <code>/etc/ssl/certs</code> directory when the device firmware was being built (see <a href="#security-first">Security First</a>). This design allows the device to become a command and control interface without any special firewall configuration, nor the need for any holes to be punched. The result is a site configuration that is no more difficult than establishing an ethernet connection and powering-on the device.
+To get started, we need to understand the mechanisms at play in the overall solution. When the A140808 client device boots up, a service starts on the device which attempts to establish an SSL websocket connection to a pub-sub host. The identity (host:port) of this cloud host is stored in the <code>/etc/config/cloudcfg</code> configuration file on the device. The SSL connection will be trusted as the public key of our own certificate authority (CA) was added to the <code>/etc/ssl/certs</code> directory when the device firmware was being built (see <a href="#security-first">Security First</a>). This design allows the device to become a command and control interface without any special firewall configuration, nor the need for any holes to be punched through the firewall. The result is a field configuration of the device that is no more difficult than establishing an ethernet connection and powering-on the device.
 
-In addition to the pub-sub capability described above, the Nginx solution presented here also provides an html based control panel secured with <a href="https://www.nginx.com/resources/admin-guide/restricting-access" target="_blank">auth basic</a> over SSL. While it is possible to configure a database to handle more complex authentication scenarios and multi-tenant capabilities, such solutions will not be presented here for the sake of simplicity.
+In addition to the pub-sub capability described above, the Nginx solution serves an html based control panel secured with <a href="https://www.nginx.com/resources/admin-guide/restricting-access" target="_blank">auth basic</a> over SSL. While it is possible to configure a database to handle more complex authentication scenarios and multi-tenant capabilities, such solutions will not be presented here for the sake of simplicity.
 
-<span style="color: #f00">Note: Ubuntu Wily Werewolf 15.10 is known to have issues building this docker image.</span>
+<span style="color: #f00">Note: Ubuntu Wily Werewolf 15.10 is known to have issues building this Docker image.</span>
 
 Begin by downloading the server_nginx repository and unpack:
 
@@ -623,7 +637,7 @@ $ tar xzvf server_nginx.tar.gz
 $ cd server_nginx-master
 {% endhighlight %}
 
-The docker directory contains all of the files needed to build the deployment package and the <code>rs-docker-util.sh</code> utility script used to help package and deploy the generated docker container (more on the use of this script later).
+The Docker directory contains all of the files needed to build the deployment package and the <code>rs-docker-util.sh</code> utility script used to help package and deploy the generated Docker container (more on the use of this script later).
 
 {% highlight sh %}
 [server_nginx-master]$ ls -al
@@ -632,14 +646,22 @@ drwxrwxr-x 3 johnc johnc 4.0K Sep 30 22:34 docker
 -rwxrwxr-x 1 johnc johnc 8.5K Sep 30 22:34 rs-docker-util.sh
 {% endhighlight %}
 
-Before building the project, the public certificate chain (which is the public root CA and the public certificate together) need to be placed in the docker directory along with the private key of the certificate as shown below. These certificates were created in the <a href="#security-first">Security First</a> section above. This example assumes these certs are stored in the home directory:
+<a class="anchor" id="bweb-certs"></a>
+
+<br/>**Configuring Certificates**
+
+Before building the project, the public certificate chain (which is the public root CA and the public certificate together) need to be placed in the Docker directory along with the private key of the certificate as shown below. These certificates were created in the <a href="#security-first">Security First</a> section above. This example assumes these certs are stored in the home directory:
 
 {% highlight sh %}
 [server_nginx-master]$ cp ~/certs/acme-co_cert_chain_public.cer docker/cert-chain-public.pem
 [server_nginx-master]$ cp ~/certs/acme-co_cert_private docker/cert-private.pem
 {% endhighlight %}
 
-Once the certificates are in place, start the build by typing <code>make</code>. The build process begins by attempting to download the official centos 7 image for docker. After the image is downloaded, it is automatically updated via a <code>yum update</code> command then Nginx and its modules are built. In this case, the Nginx modules are the wandenberg pushstream module, and a custom sha256-hmac <a href="https://github.com/rest-switch/server_nginx/tree/master/docker/docker_build/ngx_hmac_auth_module" target="_blank">signed url authentication module</a> which is used to authenticate requests from the Android client. The benefit of single-use signed-urls in this application is that they allow for simple one-shot messages to be passed in the clear without all of the <a href="http://www.infoq.com/articles/HTTPS-Connection-Jeff-Moser" target="_blank">setup overhead</a> of an encrypted connection. Considering the latency of the mobile phone connection over a carrier or wifi network, shaving as many round-trips off really adds up quickly and provides for a more responsive user interface. More on this later.
+<a class="anchor" id="bweb-build-docker"></a>
+
+<br/>**Building the Docker Image**
+
+Once the certificates are in place, start building the Docker image by typing <code>make</code>. The build process begins by attempting to download the official centos 7 image for Docker. After the image is downloaded, it is automatically updated via a <code>yum update</code> command then Nginx and its modules are built. In this case, the Nginx modules are the wandenberg pushstream module, and a custom sha256-hmac <a href="https://github.com/rest-switch/server_nginx/tree/master/docker/docker_build/ngx_hmac_auth_module" target="_blank">signed url authentication module</a> which is used to authenticate requests from the Android client. The benefit of single-use signed-urls in this application is that they allow for simple one-shot messages to be passed in the clear without all of the <a href="http://www.infoq.com/articles/HTTPS-Connection-Jeff-Moser" target="_blank">setup overhead</a> of an encrypted connection. Considering the latency of the mobile phone connection over a carrier or wifi network, shaving as many round-trips off really adds up quickly and provides for a more responsive user interface. More on this later.
 
 If everything goes well, the build will complete after a few minutes:
 
@@ -654,10 +676,10 @@ Successfully built 20c096a1a447
 the docker image is now built
  - to run this image locally, run: "make run"
  - to run this image remotely, run: "make deploy"
-
+ 
 {% endhighlight %}
 
-At this point the docker image is complete. Type <code>make show</code> to see result of the build process:
+At this point the Docker image is complete. Type <code>make show</code> to see result of the build process:
 
 {% highlight sh %}
 [server_nginx-master]$ make show
@@ -669,16 +691,24 @@ centos                    centos7   ce20c473cd8a   7 weeks ago      172.3 MB
 CONTAINER ID      IMAGE      COMMAND      CREATED      STATUS      PORTS      NAMES
 {% endhighlight %}
 
-If the build fails, it may be necessary to clean up partially built artifacts that were left behind. The <code>make clean</code> command attempts to do just this, but it cannot be too aggressive as other docker images and containers may exist on the build system which do not belong to this build process. A more aggressive option is the <code>make distclean</code> command. If manual cleanup is required, the docker image removal command is <code>docker rmi &lt;image id&gt;</code> and the docker container removal command is <code>docker rm &lt;container id&gt;</code>. If you experience repeated build failures, try deploying an Amazon Linux AMI and build the image this way. Assuming all went well with the build, the image is ready to be run locally or packaged for deployment on a remote server. 
+If the build fails, it may be necessary to clean up partially built artifacts that were left behind. The <code>make clean</code> command attempts to do just this, but it cannot be too aggressive as other Docker images and containers may exist on the build system which do not belong to this build process. A more aggressive option is the <code>make distclean</code> command. If manual cleanup is required, the Docker image removal command is <code>docker rmi &lt;image id&gt;</code> and the Docker container removal command is <code>docker rm &lt;container id&gt;</code>. If you experience repeated build failures, try deploying an Amazon Linux AMI and build the image this way. Assuming all went well with the build, the image is ready to be run locally or packaged for deployment on a remote server. 
 
-Now is the time to decide if we want to use the stanard web ports or remap them. The Nginx instance running within the container always uses the standard ports 80 for http and 443 for https. These ports can be mapped to any value by docker when the container is created. These docker port values can be changed by editing the <code>Makefile</code> or the <code>rs-docker-util.sh</code> file (depending if we are deploying locally or remotely).
+<a class="anchor" id="bweb-docker-ports"></a>
+
+<br/>**Choose Docker HTTP Ports**
+
+The ports exposed from the Docker container can be remapped. The Nginx instance running within the container always uses the standard ports 80 for http and 443 for https. These ports can be mapped to any value by Docker when the container is created. These Docker port values can be changed by editing the <code>Makefile</code> or the <code>rs-docker-util.sh</code> file (depending if we are deploying locally or remotely).
 
 {% highlight sh %}
 EXPOSED_HTTP_PORT=80
 EXPOSED_HTTPS_PORT=443
 {% endhighlight %}
 
-To run locally, execute the <code>make run</code> command. To deploy remotely, use the <code>make deploy</code> command. The image deployment process will take a couple of minutes as the Linux filesystem is compressed into a tar archive:
+<a class="anchor" id="bweb-package-docker"></a>
+
+<br/>**Packaging the Docker Image**
+
+To run locally, execute the <code>make run</code> command now and skip ahead to the <a href="#bweb-config-pw">Configure Passwords</a> section below. Otherwise, to deploy to a remote server, the image must be packaged and deployed remotely. To package the image for remote deployment, use the <code>make deploy</code> command. The image deployment process will take a couple of minutes as the Linux filesystem is compressed into a tar archive:
 
 {% highlight sh %}
 [server_nginx-master]$ make deploy
@@ -687,10 +717,10 @@ deploying the latest docker image, please wait...
 docker image packaging now complete: restswitch_web_docker_8e2dd31572da.tar.xz
 use the rs-docker-util.sh script to help manage this image:
 -rwxrwxr-x 1 ec2-user ec2-user 8644 Oct  1 02:34 rs-docker-util.sh
-
+ 
 {% endhighlight %}
 
-As indicated in the output message above, the deployment file in this case is <code>restswitch_web_docker_8e2dd31572da.tar.xz</code>  This file ius used in conjunction with the <code>rs-docker-util.sh</code> file. These are the only two files needed to deploy the docker image remotely. Copy both of these files to the remote server.
+As indicated in the output message above, the deployment file in this case is <code>restswitch_web_docker_8e2dd31572da.tar.xz</code>  This file ius used in conjunction with the <code>rs-docker-util.sh</code> file. These are the only two files needed to deploy the Docker image remotely. Copy both of these files to the remote server.
 
 At this point, take a moment to see what all the <code>rs-docker-util.sh</code> script provides. Most of the commands found in the Makefile are duplicated in this script. This is so make is not required to be installed on the remote deployment machine. Use <code>./rs-docker-util.sh --help</code> to display the command-line options:
 
@@ -717,13 +747,95 @@ Commands:
  term                     alias for enter
  terminal                 alias for enter
  tidy                     similar to clean, but does not remove container
-
+ 
 {% endhighlight %}
 
 One command worth noting is the <code>./rs-docker-util.sh enter</code> command. This command will run a bash shell in the running container allowing ssh-like access to the instance. This is handy for getting inside to review log files or to change configuration. Also notice the <code>sethash</code> and <code>setpass</code> commands: these command are used to configure Nginx settings without entering the container (more on this later).
 
-After the <code>restswitch_web_docker_8e2dd31572da.tar.xz</code> and <code>rs-docker-util.sh</code> files have been copied to the remote deployment machine, we are ready to create a docker container from the compressed docker image. Type <code./>rs-docker-util.sh ...</code>
+After the <code>restswitch_web_docker_8e2dd31572da.tar.xz</code> and <code>rs-docker-util.sh</code> files have been copied to the remote deployment machine, create a Docker container from the compressed Docker image by typing: <code>./rs-docker-util.sh load restswitch_web_docker_8e2dd31572da.tar.xz</code>
 
+{% highlight sh %}
+$ ./rs-docker-util.sh load restswitch_web_docker_8e2dd31572da.tar.xz
+loading image: restswitch_web_docker_8e2dd31572da.tar.xz
+please wait...
+
+REPOSITORY                TAG      IMAGE ID       CREATED       VIRTUAL SIZE
+restswitch/server_nginx   latest   8e2dd31572da   2 hours ago   291.9 MB
+ 
+{% endhighlight %}
+
+The image is now installed and ready to be launched in a new Docker container.
+
+<a class="anchor" id="bweb-run-docker"></a>
+
+<br/>**Creating and Running the Docker Container**
+
+The last step is to create a running Docker container from the image. It is at this step where any port mapping gets applied (see <a href="#bweb-docker-ports">Docker Ports</a> above) if so desired. To create the running container, type: <code>./rs-docker-util.sh create</code>
+
+{% highlight sh %}
+$ ./rs-docker-util.sh create
+creating restswitch_webserver container...
+7cd5b2c63c1649e99cc5b96df6cc0b254610866bac811408fde451b4d610788b
+
+$ ./rs-docker-util.sh show
+REPOSITORY                TAG      IMAGE ID       CREATED       VIRTUAL SIZE
+restswitch/server_nginx   latest   8e2dd31572da   2 hours ago   291.9 MB
+-------------------------------------------------------------------------------------------------------------------------
+CONTAINER ID   IMAGE                            COMMAND             CREATED         STATUS   PORTS   NAMES
+7cd5b2c63c16   restswitch/server_nginx:latest   "/usr/sbin/nginx"   6 seconds ago                    restswitch_webserver   
+ 
+{% endhighlight %}
+
+The key thing to noice from the <code>./rs-docker-util.sh show</code> output above is that the STATUS column above does not indicate a status of EXITED. A status of exited indicates a failure for Nginx to start. One reason Nginx will refuse to start is if missing or invalid SSL certificates are supplied in the <a href="#bweb-certs">Configuring Certificates</a> step above. In order to make a better assessment of why Nginx is failing to start, it may be necessary to forcibly enter the Docker container and manually excute <code>nginx</code> at the command line. To start the Docker container forcibly, use the <code>./rs-docker-util.sh debug</code> command.
+
+At this point the container is running and it is possible to enter the running container with the <code>./rs-docker-util.sh enter</code> command. Type <code>exit</code> to leave the container when finished browsing around.
+
+{% highlight sh %}
+$ ./rs-docker-util.sh enter
+[root@7cd5b2c63c16 /]# ll
+total 48
+lrwxrwxrwx   1 root root    7 Aug 14 21:00 bin -> usr/bin
+drwxr-xr-x   5 root root  360 Dec  6 18:32 dev
+drwxr-xr-x  48 root root 4096 Dec  6 17:54 etc
+drwxr-xr-x   2 root root 4096 Jun 10  2014 home
+lrwxrwxrwx   1 root root    7 Aug 14 21:00 lib -> usr/lib
+lrwxrwxrwx   1 root root    9 Aug 14 21:00 lib64 -> usr/lib64
+drwx------   2 root root 4096 Aug 14 21:00 lost+found
+drwxr-xr-x   2 root root 4096 Jun 10  2014 media
+drwxr-xr-x   2 root root 4096 Jun 10  2014 mnt
+drwxr-xr-x   2 root root 4096 Jun 10  2014 opt
+dr-xr-xr-x 113 root root    0 Dec  6 18:32 proc
+dr-xr-x---   3 root root 4096 Dec  6 18:32 root
+drwxr-xr-x   5 root root 4096 Dec  6 18:32 run
+lrwxrwxrwx   1 root root    8 Aug 14 21:00 sbin -> usr/sbin
+drwxr-xr-x   2 root root 4096 Jun 10  2014 srv
+dr-xr-xr-x  13 root root    0 Dec  6 18:32 sys
+drwxrwxrwt   7 root root 4096 Dec  6 18:34 tmp
+drwxr-xr-x  13 root root 4096 Aug 14 21:00 usr
+drwxr-xr-x  20 root root 4096 Dec  5 01:51 var
+
+[root@7cd5b2c63c16 /]# exit
+ 
+{% endhighlight %}
+
+<a class="anchor" id="bweb-config-pw"></a>
+
+<br/>**Configure Passwords**
+
+The last step is to configure the userid and passwords used to secure the system. The system is secured via two different credential sets. The first credential set secures the web based control panel using standard auth-basic authentication. The second set of credentials are used to sign the single-use secure URLs clients will use to send commands to the system. It may seem a little confusing why two credential sets exist, but take a moment to understand them both. It is recommended to use an email address for the userid. Note that the userid need not be an email address, but each user of the system must use a unique userid. Using an email address for the userid ensures global uniqueness. Additionally, the UI for both the control panel web page and the Android client label this field as "email address" so it may reduce confusion down the road to use an email address now.
+
+To assign the password used to secure the control panel web page, use the <code>setpass</code> command supplying the email address and password to be used: <code>./rs-docker-util.sh setpass myuser@domain.com mysecret</code>
+
+Likewise, to assign the password that will be used for signed URLs, use the <code>sethash</code> command supplying the email address and password to be used.  To set the signed url userid and password, type: <code>./rs-docker-util.sh sethash myuser@domain.com my-signed-url-password</code>
+
+The system is now ready to be used. The control panel web page can be accessed via the <code>/secure</code> route: <code>https://mydomain.com/secure/</code>  Note that if a custom port other than 443 was used, it is necessary to supply it here: <code>https://mydomain.com:8443/secure/</code>  Also note that if a custom port is used, the trailing slash MUST be specified or the browser will attempt to 301 follow the URL using the default port.
+
+<a class="anchor" id="a140808-setup"></a>
+<span>&nbsp;</span>
+
+###A140808 Device Setup
+
+At this point we are ready to configure an A140808 device for use with the system and run an end-to-end test!
 
 
 
