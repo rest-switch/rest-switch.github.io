@@ -54,7 +54,7 @@ toc: >
               </ul>
             </li>
             <li><a href="#booting-ssh">Booting&nbsp;and&nbsp;SSH</a></li>
-            <li><a href="#building-webserver">Building&nbsp;Webserver</a>
+            <li><a href="#building-webserver">Building&nbsp;Web&nbsp;Server</a>
               <ul class="nav nav-stacked">
                 <li><a href="#bweb-certs">Configuring&nbsp;Certs</a></li>
                 <li><a href="#bweb-build-docker">Build&nbsp;Docker</a></li>
@@ -172,7 +172,7 @@ $ newgrp docker
 
 Comprehensive security is a primary concern of IoT applications. This project utilizes well established RSA asymmetric encryption deployed with high strength 4096 bit keys. Additionally, the signed URL design combines HMAC hashing using the high security SHA256 algorithm (HMAC-SHA256) and are narrowly limited in time. In the near future, the signed URL implementation will also add adaptive complexity and salting similar to that which is found in the <a href="https://en.wikipedia.org/wiki/Bcrypt" target="_blank">bcrypt</a> key derivation function implementation.
 
-The first step is to generate a self-signed Certificate Authority (CA) which will be built into the A140808 client device, smart phone client devices, as well as the server. This approach allows us to sign our own certificates and establish a tight client-server security contract extremely resistant to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">man-in-the-middle-attacks</a>. Not only is this approach free, if properly deployed, it can be more secure than using a 3rd party CA that is susceptible to <a href="https://en.wikipedia.org/wiki/DigiNotar" target="_blank">hacking</a> or <a href="https://googleonlinesecurity.blogspot.com/2015/03/maintaining-digital-certificate-security.html" target="_blank">improper management</a>, or <a href="http://www.pcworld.com/article/249510/trustwave_admits_issuing_maninthemiddle_digital_certificate_mozilla_debates_punishment.html" target="_blank">poor judgement</a>. However, it is important to note that the certificate strategy does not preclude the use of certificates signed by well-known CAs.
+The first step is to generate a self-signed Certificate Authority (CA) which will be built into the A140808 client device, smart phone client devices, as well as the server. This approach allows us to sign our own certificates and establish a tight client-server security contract extremely resistant to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">man-in-the-middle-attacks</a>. Not only is this approach free, if properly deployed, it can be more secure than using a 3rd party CA that is susceptible to <a href="https://en.wikipedia.org/wiki/DigiNotar" target="_blank">hacking</a> or <a href="https://googleonlinesecurity.blogspot.com/2015/03/maintaining-digital-certificate-security.html" target="_blank">improper management</a>, or <a href="http://www.pcworld.com/article/249510/trustwave_admits_issuing_maninthemiddle_digital_certificate_mozilla_debates_punishment.html" target="_blank">poor judgment</a>. However, it is important to note that the certificate strategy does not preclude the use of certificates signed by well-known CAs.
 
 <a class="anchor" id="security-gen-ca"></a>
 <span>&nbsp;</span>
@@ -310,7 +310,7 @@ Switch to the <code>device_a140808-master/avr</code> directory and type <code>ma
 
 In a subsequent section, the source files and theory of operation will be discussed in greater detail. However, at this point this is all that is needed to be able to flash the ATmega32A device. Building the HLK-RM04 device is up next.
 
-<a class="anchor" id="bfirm-hlmrm04"></a>
+<a class="anchor" id="bfirm-hlkrm04"></a>
 
 <br/>**Building the Atmel HLK-RM04 Firmware**
 
@@ -363,7 +363,7 @@ ssh certificate access, use existing cert: sshcert=<filespec>
 
 **Tip:** Long-running builds will fail if the terminal session gets disconnected. Launch the <code>screen</code> utility to allow the build to continue even of the terminal session becomes disconnected. If the terminal session does become detached, reconnect to the Linux host and execute <code>screen -r</code> to reattach to the running session.
 
-After the build finishes successfully, the firmware file <code>openwrt-ramips-rt305x-hlk-rm04-squashfs-sysupgrade.bin</code> will be placed into the <code>hlk-rm04/bin</code> directory. For details on the sysupgrade.bin file, refer to the <a href="http://wiki.openwrt.org/doc/howto/generic.sysupgrade" target="_blank">OpenwWRT wiki</a>. The sysupgrade file does not include a bootloader, so it can only be used to update an already running A140808 device. In a later section of this article, instructions for doing so are included. In the case of a new device, it is necessary to build a full firmware image which takes a few more steps.
+After the build finishes successfully, the firmware file <code>openwrt-ramips-rt305x-hlk-rm04-squashfs-sysupgrade.bin</code> will be placed into the <code>hlk-rm04/bin</code> directory. For details on the sysupgrade.bin file, refer to the <a href="http://wiki.openwrt.org/doc/howto/generic.sysupgrade" target="_blank">OpenWRT wiki</a>. The sysupgrade file does not include a bootloader, so it can only be used to update an already running A140808 device. In a later section of this article, instructions for doing so are included. In the case of a new device, it is necessary to build a full firmware image which takes a few more steps.
 
 <a class="anchor" id="bfirm-uboot"></a>
 
@@ -392,7 +392,7 @@ hlk-rm04/bin/a140808_akbmkzh80.bin
 
 The serial number (aka Device Id) is a nine character alphanumeric code following the underscore. In the case above, the serial number is <code>akbmkzh80</code>. Each time a firmware is emitted, a unique serial number will be generated. Yours will be different than the one shown in this example. Record this number and affix it to the outside of the device; it will be used later to uniquely identify the device when it connects to the cloud.
 
-The firmware generation for the HLM-RM04 is now complete. In the next section the firmware for the two chips will be written to their respective devices.
+The firmware generation for the HLK-RM04 is now complete. In the next section the firmware for the two chips will be written to their respective devices.
 
 <a class="anchor" id="flashing-firmware"></a>
 <span>&nbsp;</span>
@@ -407,7 +407,7 @@ The firmware for both the Atmel ATmega32A chip and the Hi-Link HLK-RM04 module n
 
 Programming the HLK-RM04 is more difficult. Although it should be possible to reprogram the device via its programming header or by software, that route is not documented and the device is easy to brick. Empirical testing revealed that it was much easier and foolproof to write directly to the flash memory located on the bottom of the module using the <a href="http://www.autoelectric.cn/EN/TL866_main.html" target="_blank">Autoelectric MiniPro TL866A</a> universal programmer and an <a href="http://www.aliexpress.com/item/TL866A-Universal-Programmer-Support-Over-13000-Chips-USB-Programmer-with-4PCS-Socket-and-IC-Picker-Free/1378818625.html" target="_blank">8 pin SOIC test clip</a>. This technique is also agnostic to a bricked device so it will always work in all circumstances.
 
-An added bonus of the Minipro TL866A model is that it has a six pin ICSP programming interface that can flash Atmel chips via the ICSP programming header located on the A140808 board (Figure 4). This makes it the only programmer needed for the entire project. Support for both the AVRISP mkII and the TL866A programmers are included in the supplied project makefiles.
+An added bonus of the MiniPro TL866A model is that it has a six pin ICSP programming interface that can flash Atmel chips via the ICSP programming header located on the A140808 board (Figure 4). This makes it the only programmer needed for the entire project. Support for both the AVRISP mkII and the TL866A programmers are included in the supplied project makefiles.
 
 **Note:** There are two models of the MiniPro TL866: The TL866A provides support for flashing Atmel chips via a six pin ICSP programming interface on the front. The less expensive TL866CS model does not include this ICSP interface and thus will require a second programmer for the Atmel device such as the AVRISP mkII.
 
@@ -560,7 +560,7 @@ When the command finishes successfully, the Atmel programming is complete.
 
 The next step is to program the HLK-RM04. This step requires MiniPro TL866A and an 8 pin SOIC test clip. Start by identifying the flash memory on the HLK-RM04 device. The make and model of the flash memory is required when writing to the part. The part number is written on the chip itself. In my case the flash memory was covered with paint and required acetone and a cotton swab to remove. Using a smartphone to take a picture and zooming in, the part was identified as <a href="http://www.winbond.com/hq/product/code-storage-flash-memory/serial-nor-flash/?__locale=en&amp;partNo=W25Q32BV" target="_blank">Winbond W25Q32BV</a>. Another flash memory used by HiLink for the HLK-RM04 device is <a href="http://www.macronix.com/en-us/Product/Pages/ProductDetail.aspx?PartNo=MX25L3206E" target="_blank">Macronix MX25L3206E</a>. Undoubtedly HiLink uses other flash memories than the two listed here. This is an open source project, if your device has another type of flash memory, please create a pull request or submit a patch file.
 
-To get a list of possible part numbers the minipro software can program, use the <code>-l</code> command line option (with a grep filter in this case):
+To get a list of possible part numbers the MiniPro software can program, use the <code>-l</code> command line option (with a grep filter in this case):
 
 <p style="margin: 0"><span>&nbsp;</span></p>
 <p style="padding-left: 1em; margin: 0">If required, build the minipro binary first:</p>
@@ -617,7 +617,7 @@ Once the command successfully completes, the device is ready to boot. Insert the
 
 ###Booting and SSH
 
-Once powered on, the red LED light on the HLK-RM04 should begin to blink as Linux begins to boot. Once the kernel is loaded the network indicator lights will begin to flash. The device is setup to automatically accept a DHCP issued TCP/IP address, so it is a simple matter to scan the network to find it. Perhaps the easiest way to find the IP address associated with the MAC address used above (see Figure 5) is to search the logs of the network DCHP server. Other options include network scanning apps such as <a href="https://play.google.com/store/apps/details?id=com.overlook.android.fing" target="_blank">Fing for Android</a>, <a href="https://itunes.apple.com/us/app/lanscan/id472226235" target="_blank">LanScan for OSX</a>, or <a href="https://www.linux.com/learn/tutorials/290879-beginners-guide-to-nmap" target="_blank">nmap for Linux</a>.
+Once powered on, the red LED light on the HLK-RM04 should begin to blink as Linux begins to boot. Once the kernel is loaded the network indicator lights will begin to flash. The device is setup to automatically accept a DHCP issued TCP/IP address, so it is a simple matter to scan the network to find it. Perhaps the easiest way to find the IP address associated with the MAC address used above (see Figure 5) is to search the logs of the network DHCP server. Other options include network scanning apps such as <a href="https://play.google.com/store/apps/details?id=com.overlook.android.fing" target="_blank">Fing for Android</a>, <a href="https://itunes.apple.com/us/app/lanscan/id472226235" target="_blank">LanScan for OSX</a>, or <a href="https://www.linux.com/learn/tutorials/290879-beginners-guide-to-nmap" target="_blank">nmap for Linux</a>.
 
 {% highlight sh %}
 $ nmap -sP 192.168.1.0/24 >/dev/null && arp -an | grep -i ac:a2:13:b5:4a:3e
@@ -648,7 +648,7 @@ root@a140808:~#
 <a class="anchor" id="building-webserver"></a>
 <span>&nbsp;</span>
 
-###Building the Webserver
+###Building the Web Server
 
 The web server used in this project is <a href="http://nginx.org" target="_blank">Nginx</a>. The modular nature of Nginx lends itself well not only to serving html content, but it can also provide a rock-solid publish-subscribe facility through the use of the <a href="http://highscalability.com/blog/2014/4/28/how-disqus-went-realtime-with-165k-messages-per-second-and-l.html" target="_blank">highly scalable</a> and reliable <a href="https://github.com/wandenberg/nginx-push-stream-module" target="_blank">push stream</a> module by <a href="https://br.linkedin.com/in/wandenberg-peixoto-52582a8" target="_blank">Wandenberg Peixoto</a>. Other benefits of Nginx include extremely easy SSL setup and configuration as well as a wide range of other integration modules. While the overall solution was also demonstrated to very work well with both <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="http://redis.io/topics/pubsub" target="_blank">Redis</a>, the simplicity and overall completeness of the Nginx solution edged out the competition for the goals of this application. The entire Nginx deployment package is bundled using a <a href="http://docs.docker.com/engine/userguide/dockerimages" target="_blank">docker image</a> which greatly simplifies numerous potential configuration and installation pitfalls making the entire process nearly foolproof.
 
@@ -868,7 +868,7 @@ To assign the password used to secure the control panel web page, use the <code>
 
 Likewise, to assign the password that will be used for signed URLs, use the <code>sethash</code> command supplying the email address and password to be used.  To set the signed url userid and password, type: <code>./rs-docker-util.sh sethash "myuser@domain.com" "my-signed-url-password"</code>
 
-Tip: If the password contains any special characters like \ or &amp; the BASH shell will try and intprepert and consume these characters. It is always a good idea to quote protect passwords when passing on the command-line as shown above to prevent this from happening.
+Tip: If the password contains any special characters like \ or &amp; the BASH shell will try and interpret and consume these characters. It is always a good idea to quote protect passwords when passing on the command-line as shown above to prevent this from happening.
 
 The system is now ready to be used. The control panel web page can be accessed via the <code>/secure/</code> route: <code>https://mydomain.com/secure/</code>  Note that if a custom port (other than 443) was selected, it is necessary to supply it after the host with a colon: <code>https://mydomain.com:8443/secure/</code>  Also note that if a custom port is used, the trailing slash MUST be specified or the browser will attempt to 301 follow the URL using the default 443 port.
 
@@ -901,7 +901,7 @@ Nov  2 21:56:20 a140808 daemon.info a140808[2014]: ws_onopen -- connection estab
  
 {% endhighlight %}
 
-Notice the last line in the log output. The "connection established" message indicates that everything went well. If the a140808 daemon is stuck in a reconnect loop instead, there is a very good chance the public root CA certificate is not properly installed on the device or the webserver. This certificate should live in the <code>/etc/ssl/certs</code> directory on the A140808 device, and have a symbolic link named by taking the hash + .0 of the CA public certificate. To compute the hash of the public CA certificate, use a machine with openssl installed and issue the command <code>openssl x509 -hash -noout -in &lt;ca_filename.cer&gt;</code>
+Notice the last line in the log output. The "connection established" message indicates that everything went well. If the a140808 daemon is stuck in a reconnect loop instead, there is a very good chance the public root CA certificate is not properly installed on the device or the web server. This certificate should live in the <code>/etc/ssl/certs</code> directory on the A140808 device, and have a symbolic link named by taking the hash + .0 of the CA public certificate. To compute the hash of the public CA certificate, use a machine with openssl installed and issue the command <code>openssl x509 -hash -noout -in &lt;ca_filename.cer&gt;</code>
 
 {% highlight sh %}
  
@@ -913,7 +913,7 @@ lrwxrwxrwx    1 root     root            13 Oct  3 23:43 7543b2d6.0 -> acme-co_c
  
 {% endhighlight %}
 
-Once the A140808 device is able to connect with the webserver, check the <code>channels-stats</code> endpoint to see the devices registered with it. The endpoint is currently not secured, so that is something that needs to be moved behind the /secure/ route to be password protected. Issue the following command to see the devices registered with the server:
+Once the A140808 device is able to connect with the web server, check the <code>channels-stats</code> endpoint to see the devices registered with it. The endpoint is currently not secured, so that is something that needs to be moved behind the /secure/ route to be password protected. Issue the following command to see the devices registered with the server:
 
 {% highlight sh %}
  
@@ -937,9 +937,9 @@ $ wget -qO- --no-check-certificate "https://52.1.48.84/channels-stats?id=ALL"
 
 <br/>**Configure Control Panel**
 
-Now that the A140808 device has a connection to the webserver, it is now possible to issue a command to it. To issue a command, the web page control panel needs to be configured with the serial number (aka Device ID) of the device to control, in this case <code>akbmkzh80</code>  See <a href="#bfirm-uboot">Adding u-boot</a> above for details on the device serial number. The other configuration task is to enter the email address and password that was set for the signed url hash above (see <a href="#bweb-config-pw">Configure Passwords</a>).
+Now that the A140808 device has a connection to the web server, it is now possible to issue a command to it. To issue a command, the web page control panel needs to be configured with the serial number (aka Device ID) of the device to control, in this case <code>akbmkzh80</code>  See <a href="#bfirm-uboot">Adding u-boot</a> above for details on the device serial number. The other configuration task is to enter the email address and password that was set for the signed url hash above (see <a href="#bweb-config-pw">Configure Passwords</a>).
 
-The Device Control Panel web page has two device sections for controling two different unique devices. Paste the serial number in the upper-right edit field where it says "Device ID" of either one.
+The Device Control Panel web page has two device sections for controlling two different unique devices. Paste the serial number in the upper-right edit field where it says "Device ID" of either one.
 
 Finally, in the upper-right corner of the web page, click the "Sign In" menu item, and enter the email address and password for the hash (see <a href="#bweb-config-pw">sethash</a> above), and finally click the "Sign In" button.
 
