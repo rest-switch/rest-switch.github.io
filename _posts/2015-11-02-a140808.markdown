@@ -895,7 +895,7 @@ Nov  2 21:56:19 a140808 daemon.notice a140808[2014]: opening /dev/ttyS1 at 57600
 Nov  2 21:56:19 a140808 daemon.notice a140808[2014]: connecting to host: [52.1.48.84]
 Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect
 Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect: creating context
-Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect: connect request suceeded
+Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect: connect request succeeded
 Nov  2 21:56:20 a140808 daemon.notice a140808[2014]: ws_onevent: LWS_CALLBACK_CLIENT_ESTABLISHED
 Nov  2 21:56:20 a140808 daemon.info a140808[2014]: ws_onopen -- connection established --
  
