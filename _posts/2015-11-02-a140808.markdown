@@ -63,7 +63,11 @@ toc: >
                 <li><a href="#bweb-config-pw">Configure&nbsp;Passwords</a></li>
               </ul>
             </li>
-            <li><a href="#a140808-setup">A140808&nbsp;Setup</a></li>
+            <li><a href="#a140808-setup">A140808&nbsp;Setup</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#a140808-setup-cp">Control&nbsp;Panel</a></li>
+              </ul>
+            </li>
             <li><a href="#building-android">Building&nbsp;Android</a></li>
             <li><a href="#conclusion">Conclusion</a></li>
             <li><a href="#comments">Comments</a></li>
@@ -666,6 +670,7 @@ Once the certificates are in place, start building the Docker image by typing <c
 If everything goes well, the build will complete after a few minutes:
 
 {% highlight sh %}
+
 . . .
 
 Step 19 : CMD /usr/sbin/nginx
@@ -682,6 +687,7 @@ the docker image is now built
 At this point the Docker image is complete. Type <code>make show</code> to see result of the build process:
 
 {% highlight sh %}
+ 
 [server_nginx-master]$ make show
 REPOSITORY                TAG       IMAGE ID       CREATED          VIRTUAL SIZE
 restswitch/server_nginx   latest    8e2dd31572da   27 seconds ago   291.9 MB
@@ -689,6 +695,7 @@ restswitch/server_nginx   101       8e2dd31572da   27 seconds ago   291.9 MB
 centos                    centos7   ce20c473cd8a   7 weeks ago      172.3 MB
 --------------------------------------------------------------------------------
 CONTAINER ID      IMAGE      COMMAND      CREATED      STATUS      PORTS      NAMES
+ 
 {% endhighlight %}
 
 If the build fails, it may be necessary to clean up partially built artifacts that were left behind. The <code>make clean</code> command attempts to do just this, but it cannot be too aggressive as other Docker images and containers may exist on the build system which do not belong to this build process. A more aggressive option is the <code>make distclean</code> command. If manual cleanup is required, the Docker image removal command is <code>docker rmi &lt;image id&gt;</code> and the Docker container removal command is <code>docker rm &lt;container id&gt;</code>. If you experience repeated build failures, try deploying an Amazon Linux AMI and build the image this way. Assuming all went well with the build, the image is ready to be run locally or packaged for deployment on a remote server. 
@@ -711,6 +718,7 @@ EXPOSED_HTTPS_PORT=443
 To run locally, execute the <code>make run</code> command now and skip ahead to the <a href="#bweb-config-pw">Configure Passwords</a> section below. Otherwise, to deploy to a remote server, the image must be packaged and deployed remotely. To package the image for remote deployment, use the <code>make deploy</code> command. The image deployment process will take a couple of minutes as the Linux filesystem is compressed into a tar archive:
 
 {% highlight sh %}
+ 
 [server_nginx-master]$ make deploy
 deploying the latest docker image, please wait...
  289MiB 0:02:40 [1.81MiB/s] [=====================================================>] 100%
@@ -725,6 +733,7 @@ As indicated in the output message above, the deployment file in this case is <c
 At this point, take a moment to see what all the <code>rs-docker-util.sh</code> script provides. Most of the commands found in the Makefile are duplicated in this script. This is so make is not required to be installed on the remote deployment machine. Use <code>./rs-docker-util.sh --help</code> to display the command-line options:
 
 {% highlight sh %}
+ 
 [server_nginx-master]$ ./rs-docker-util.sh --help
 
 Usage:
@@ -755,6 +764,7 @@ One command worth noting is the <code>./rs-docker-util.sh enter</code> command. 
 After the <code>restswitch_web_docker_8e2dd31572da.tar.xz</code> and <code>rs-docker-util.sh</code> files have been copied to the remote deployment machine, create a Docker container from the compressed Docker image by typing: <code>./rs-docker-util.sh load restswitch_web_docker_8e2dd31572da.tar.xz</code>
 
 {% highlight sh %}
+ 
 $ ./rs-docker-util.sh load restswitch_web_docker_8e2dd31572da.tar.xz
 loading image: restswitch_web_docker_8e2dd31572da.tar.xz
 please wait...
@@ -773,6 +783,7 @@ The image is now installed and ready to be launched in a new Docker container.
 The last step is to create a running Docker container from the image. It is at this step where any port mapping gets applied (see <a href="#bweb-docker-ports">Docker Ports</a> above) if so desired. To create the running container, type: <code>./rs-docker-util.sh create</code>
 
 {% highlight sh %}
+ 
 $ ./rs-docker-util.sh create
 creating restswitch_webserver container...
 7cd5b2c63c1649e99cc5b96df6cc0b254610866bac811408fde451b4d610788b
@@ -791,8 +802,9 @@ The key thing to noice from the <code>./rs-docker-util.sh show</code> output abo
 At this point the container is running and it is possible to enter the running container with the <code>./rs-docker-util.sh enter</code> command. Type <code>exit</code> to leave the container when finished browsing around.
 
 {% highlight sh %}
+ 
 $ ./rs-docker-util.sh enter
-[root@7cd5b2c63c16 /]# ll
+[root@7cd5b2c63c16 /]# ls -al
 total 48
 lrwxrwxrwx   1 root root    7 Aug 14 21:00 bin -> usr/bin
 drwxr-xr-x   5 root root  360 Dec  6 18:32 dev
@@ -824,20 +836,84 @@ drwxr-xr-x  20 root root 4096 Dec  5 01:51 var
 
 The last step is to configure the userid and passwords used to secure the system. The system is secured via two different credential sets. The first credential set secures the web based control panel using standard auth-basic authentication. The second set of credentials are used to sign the single-use secure URLs clients will use to send commands to the system. It may seem a little confusing why two credential sets exist, but take a moment to understand them both. It is recommended to use an email address for the userid. Note that the userid need not be an email address, but each user of the system must use a unique userid. Using an email address for the userid ensures global uniqueness. Additionally, the UI for both the control panel web page and the Android client label this field as "email address" so it may reduce confusion down the road to use an email address now.
 
-To assign the password used to secure the control panel web page, use the <code>setpass</code> command supplying the email address and password to be used: <code>./rs-docker-util.sh setpass myuser@domain.com mysecret</code>
+To assign the password used to secure the control panel web page, use the <code>setpass</code> command supplying the email address and password to be used: <code>./rs-docker-util.sh setpass "myuser@domain.com" "mysecret"</code>
 
-Likewise, to assign the password that will be used for signed URLs, use the <code>sethash</code> command supplying the email address and password to be used.  To set the signed url userid and password, type: <code>./rs-docker-util.sh sethash myuser@domain.com my-signed-url-password</code>
+Likewise, to assign the password that will be used for signed URLs, use the <code>sethash</code> command supplying the email address and password to be used.  To set the signed url userid and password, type: <code>./rs-docker-util.sh sethash "myuser@domain.com" "my-signed-url-password"</code>
 
-The system is now ready to be used. The control panel web page can be accessed via the <code>/secure</code> route: <code>https://mydomain.com/secure/</code>  Note that if a custom port other than 443 was used, it is necessary to supply it here: <code>https://mydomain.com:8443/secure/</code>  Also note that if a custom port is used, the trailing slash MUST be specified or the browser will attempt to 301 follow the URL using the default port.
+Tip: If the password contains any special characters like \ or & the BASH shell will try and intprepert these characters. It is always a good idea to quote protect the password as shown above to prevent this from happening.
+
+The system is now ready to be used. The control panel web page can be accessed via the <code>/secure/</code> route: <code>https://mydomain.com/secure/</code>  Note that if a custom port (other than 443) was selected, it is necessary to supply it after the host with a colon: <code>https://mydomain.com:8443/secure/</code>  Also note that if a custom port is used, the trailing slash MUST be specified or the browser will attempt to 301 follow the URL using the default port.
 
 <a class="anchor" id="a140808-setup"></a>
 <span>&nbsp;</span>
 
 ###A140808 Device Setup
 
-At this point we are ready to configure an A140808 device for use with the system and run an end-to-end test!
+At this point we are ready to configure an A140808 device for use with the system and run an end-to-end test! The first thing to do is to set the host name and port of the web server on the A140808 device. Access the device using ssh (see <a href="#booting-ssh">Booting and SSH</a>). Once connected, edit the <code>/etc/config/cloudcfg</code> file to set the host name and port (8443 in this example). The daemon will need to be restarted to pickup the new value.
 
+{% highlight sh %}
+ 
+$ echo '52.1.48.84:8443' > /etc/config/cloudcfg
+ 
+$ /etc/init.d/a140808 restart
+stopping deamon...
+starting deamon...
+child process pid: [783]
+ 
+$ logread
+ . . .
+Nov  2 21:56:19 a140808 daemon.notice a140808[2014]: daemon started
+Nov  2 21:56:19 a140808 daemon.notice a140808[2014]: opening /dev/ttyS1 at 57600 baud, E71
+Nov  2 21:56:19 a140808 daemon.notice a140808[2014]: connecting to host: [52.1.48.84]
+Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect
+Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect: creating context
+Nov  2 21:56:19 a140808 daemon.debug a140808[2014]: ws_connect: connect request suceeded
+Nov  2 21:56:20 a140808 daemon.notice a140808[2014]: ws_onevent: LWS_CALLBACK_CLIENT_ESTABLISHED
+Nov  2 21:56:20 a140808 daemon.info a140808[2014]: ws_onopen -- connection established --
+ 
+{% endhighlight %}
 
+Notice the last line in the log output. The "connection established" message indicates that everything went well. If the a140808 daemon is stuck in a reconnect loop instead, there is a very good chance the public root CA certificate is not properly installed on the device or the webserver. This certificate should live in the <code>/etc/ssl/certs</code> directory on the A140808 device, and have a symbolic link named by taking the hash + .0 of the CA public certificate. To compute the hash of the public CA certificate, use a machine with openssl installed and issue the command <code>openssl x509 -hash -noout -in &lt;ca_filename.cer&gt;</code>
+
+{% highlight sh %}
+
+root@a140808:~# ls -al /etc/ssl/certs
+drwxr-xr-x    1 root     root             0 Oct  3 23:43 ./
+drwxr-xr-x    1 root     root             0 Oct  1 05:05 ../
+lrwxrwxrwx    1 root     root            13 Oct  3 23:43 7543b2d6.0 -> acme-co_ca_public.cer
+-rw-r--r--    1 root     root          2118 Oct  3 23:43 acme-co_ca_public.cer
+ 
+{% endhighlight %}
+
+Once the A140808 device is able to connect with the webserver, check the <code>channels-stats</code> endpoint to see the devices registered with it. The endpoint is currently not secured, so that is something that needs to be moved behind the /secure/ route to be password protected. Issue the following command to see the devices registered with the server:
+
+{% highlight sh %}
+
+$ wget -qO- --no-check-certificate "https://52.1.48.84/channels-stats?id=ALL"
+{ "hostname": "7cd5b2c63c16", 
+  "time": "2015-11-02T00:20:05", 
+  "channels": "1", 
+  "wildcard_channels": "0", 
+  "uptime": "20865", 
+  "infos": [{ 
+    "channel": "akbmkzh80", 
+    "published_messages": "0", 
+    "stored_messages": "0", 
+    "subscribers": "1"
+  }]
+}
+ 
+{% endhighlight %}
+
+<a class="anchor" id="a140808-setup-cp"></a>
+
+<br/>**Configure Control Panel**
+
+Now that the A140808 device has a connection to the webserver, it is now possible to issue a command to it. To issue a command, the web page control panel needs to be configured with the serial number of the device to control, in this case <code>akbmkzh80</code>  See <a href="#bfirm-uboot">Adding u-boot</a> above for details on the device serial number. The other configuration task is to enter the email address and password that was set for the signed url hash above (see <a href="#bweb-config-pw">Configure Passwords</a>).
+
+The Device Control Panel web page has two device sections for controling two different unique devices. Paste the serial number in the upper-right edit field of either one. In the upper-right corner of the web page, click the "Sign In" menu item, then email address and password for the hash, and finally click the "Sign In" button.
+
+At this point the configuration is complete. Clicking "Button 1" should result in relay 1 clicking shut for 250 ms. Likewise, clicking "Button 2" should result in relay 2 clicking shut for 250 ms. Now that the system is working end-to-end, we can build the Android client next.
 
 <a class="anchor" id="building-android"></a>
 <span>&nbsp;</span>
