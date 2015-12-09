@@ -69,8 +69,15 @@ toc: >
                 <li><a href="#a140808-setup-cp">Control&nbsp;Panel</a></li>
               </ul>
             </li>
-            <li><a href="#building-android">Building&nbsp;Android</a></li>
+            <li><a href="#building-android">Building&nbsp;Android</a>
+              <ul class="nav nav-stacked">
+                <li><a href="#bandroid-install">Android&nbsp;Studio</a></li>
+                <li><a href="#bandroid-download">Download&nbsp;Project</a></li>
+                <li><a href="#bandroid-build">Build&nbsp;Project</a></li>
+              </ul>
+            </li>
             <li><a href="#conclusion">Conclusion</a></li>
+            <li><a href="#contribute">How&nbsp;to&nbsp;Help</a></li>
             <li><a href="#comments">Comments</a></li>
           </ul>
 ---
@@ -913,11 +920,11 @@ lrwxrwxrwx    1 root     root            13 Oct  3 23:43 7543b2d6.0 -> acme-co_c
  
 {% endhighlight %}
 
-Once the A140808 device is able to connect with the web server, check the <code>channels-stats</code> endpoint to see the devices registered with it. The endpoint is currently not secured, so that is something that needs to be moved behind the /secure/ route to be password protected. Issue the following command to see the devices registered with the server:
+Once the A140808 device is able to connect with the web server, check the <code>/secure/stats</code> endpoint to see the devices registered with it. The endpoint is secured by the userid (email) and password specified above in the setpass step. Issue the following command to see the devices registered with the server (note that you must specify the userid after the <code>--user</code> command line option):
 
 {% highlight sh %}
  
-$ wget -qO- --no-check-certificate "https://52.1.48.84/channels-stats?id=ALL"
+$ wget --user <userid> --ask-password -qO- --no-check-certificate "https://52.1.48.84/secure/stats?id=ALL"
 { "hostname": "7cd5b2c63c16", 
   "time": "2015-11-02T00:20:05", 
   "channels": "1", 
@@ -950,14 +957,85 @@ At this point the configuration is complete! Clicking "Button 1" should result i
 
 ###Building Android
 
-Bacon ipsum dolor amet landjaeger drumstick chicken jerky brisket shankle pancetta frankfurter ball tip short ribs beef porchetta. Frankfurter tenderloin strip steak tri-tip t-bone, cow pastrami kevin pork shoulder bresaola tail boudin pancetta ground round. Jowl ribeye short ribs, spare ribs kielbasa meatloaf t-bone doner shankle beef shoulder. Pig landjaeger pork, frankfurter kevin short ribs shankle drumstick brisket. Flank kielbasa chuck sirloin, drumstick boudin tenderloin picanha pastrami beef ribs.
+The Android client implements equivalent functionality to that of the web control panel as a native Android app. The app is designed with a quick access and quick dismissing overlay style to make it as convenient as possible to popup and dismiss quickly. Android is the only mobile app available for this project right now, so an iOS port pull request would be greatly appreciated.
+
+<a class="anchor" id="bandroid-install"></a>
+
+<br/>**Installing Android Studio**
+
+The <a href="https://developer.android.com/sdk/index.html" target="_blank">Android Studio IDE</a> needs to be installed to complie and deploy the app. This overview is not meant to be a tutorial on how to get up an running with Android Studio, many great articles are available. I personally used the <a href="http://www.ebookfrenzy.com/ebookpages/android_studio_ebook.html" target="_blank">Android Studio Development Essentials</a> eBook and got a lot out of it. Get started by downloading and installing the <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html" target="_blank">Oracle Java JDK 7</a> and then the <a href="https://developer.android.com/sdk/index.html" target="_blank">Android Studio IDE</a>.
+
+<a class="anchor" id="bandroid-download"></a>
+
+<br/>**Download Android Project Files**
+
+Once Android Studio has been installed, download the A140808 github repository and extract it:
+
+{% highlight sh %}
+ 
+$ wget -O client_android_cp.tar.gz https://github.com/rest-switch/client_android_cp/archive/master.tar.gz
+$ tar xzvf client_android_cp.tar.gz
+$ cd client_android_cp-master
+
+[client_android_cp-master]$ ls -al
+total 32K
+drwxrwxr-x 3 johnc johnc 4.0K Oct  5 07:39 app
+-rw-rw-r-- 1 johnc johnc 1.4K Oct  5 07:39 build.gradle
+-rw-rw-r-- 1 johnc johnc 1.9K Oct  5 07:39 client_android_cp.iml
+drwxrwxr-x 3 johnc johnc 4.0K Oct  5 07:39 gradle
+-rw-rw-r-- 1 johnc johnc 1.8K Oct  5 07:39 gradle.properties
+-rwxrwxr-x 1 johnc johnc 5.9K Oct  5 07:39 gradlew
+-rw-rw-r-- 1 johnc johnc  925 Oct  5 07:39 settings.gradle
+ 
+{% endhighlight %}
+
+Using the Android Studio welcome dialog, select the "Open an existing Android Studio project" menu option and navigate to the <code>client_android_cp-master</code> directory. After a few moments the IDE should come up with the project loaded. Android Studio is extremely user friendly and it will prompt to download any missing components.
+
+<a class="anchor" id="bandroid-build"></a>
+
+<br/>**Build Android Project Files**
+
+Before modifying any files, select "Build -&gt; Make Project" from the menu to confirm the project builds successfully.
+
 
 <a class="anchor" id="conclusion"></a>
 <span>&nbsp;</span>
 
 ###Conclusion
 
-Bacon ipsum dolor amet tail boudin shank ball tip. Spare ribs capicola flank meatball picanha pork loin jowl swine drumstick tri-tip t-bone sirloin. Pastrami ribeye tri-tip, sausage ham tenderloin rump. Pork chop bacon pork loin biltong picanha short ribs alcatra. Venison pork loin filet mignon jerky, short ribs pastrami prosciutto shoulder tongue bacon sirloin. Tongue sausage capicola flank salami venison short ribs chicken shank fatback sirloin picanha frankfurter andouille. Shankle corned beef brisket fatback biltong capicola, pastrami pork.
+The A140808 controller is a powerful, robust, and inexpensive platform. This article is mainly geared toward getting up and running. Later articles will dive deeper into the extensive facilities and command set the device already has. For example, the outputs can be set on, off, or toggled for 0-255ms, and the inputs can be read or trigger a webhook. Digging into the <a href="https://github.com/rest-switch/device_a140808/tree/master/hlk-rm04/files/package/system/a140808/src" target="_blank">device firmware source</a> is a great place to start.
+
+<br/>The A140808 platform has several easy and obvious applications:
+
+**Thermostat**
+
+The potential exists for controlling an HVAC system much the same way the <a href="http://www.bayweb.com/media/2005/bw-wt4-1doc.pdf" target="_blank">BayWeb Thermostat</a> does. In this application a remote temperature sending device needs to be added either via serial (i.e. RS485) or WiFi connection. The number of relay outputs of the A140808 device are suitable and appropriate for controlling modern HVAC equipment.
+
+**Sprinkler System Control**
+
+The relay outputs of the A140808 device also make it highly siutable for controlling a sprinkler system the way <a href="https://opensprinkler.com" target="_blank">other projects</a> do, but at a much lower cost.
+
+**Home Alarm**
+
+Integration with an existing alarm system or alarm system components for an open source extensible alarm system.
+
+**Other Hardware**
+
+Other projects based on the Ralink RT5350 SOC include devices in the <a target="_blank" href="http://www.belkin.com/us/Products/home-automation/c/wemo-home-automation">WeMo</a> hardware line. Presumably, only minor modifications to this project would be needed to take advantage of this hardware.
+
+
+<a class="anchor" id="contribute"></a>
+<span>&nbsp;</span>
+
+###How to Help
+
+The goal of this effort is to create a highly secure open source IoT ecosystem. A primary problem with existing IoT products is weak security. Unfortunately high security and encryption create an opaque environment, and consumers have no good way of knowing what their IoT devices are doing. One way is to open source the implementation.
+
+The goal of the hardware is to adapt off-the-shelf hardware for IoT projects. The goal is *not* to create a fragile connection from a Raspberry Pi to a garage door. All projects must be safe and suitable to run in an industrial, commercial, or residential application. 
+
+This is an open source project and pull requests are greatly appreciated. This project is still in need of core committers, if you have an interest at this level, please contact me directly.
+
+
 
 <a class="anchor" id="comments"></a>
 <span>&nbsp;</span>
