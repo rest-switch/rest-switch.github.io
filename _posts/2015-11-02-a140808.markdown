@@ -1024,7 +1024,7 @@ Other projects based on the Ralink RT5350 SOC include devices in the <a target="
 
 ###How to Help
 
-The goal of this effort is to create a highly secure open source IoT ecosystem. A primary problem with existing IoT products is weak security. Unfortunately high security and encryption create an opaque environment, and consumers have no good way of knowing what their IoT devices are doing. One way is to open source the implementation.
+The goal of this effort is to create a highly secure open source IoT ecosystem. A primary problem with existing IoT products is weak security. Unfortunately high security and encryption create an opaque environment, and consumers have no good way of knowing what their IoT devices are doing. One way to remove this uncertainty is to open source the implementation.
 
 The goal of the hardware is to adapt off-the-shelf hardware for IoT projects. The goal is *not* to create a fragile connection from a Raspberry Pi to a garage door. All projects must be safe and suitable to run in an industrial, commercial, or residential application. 
 
