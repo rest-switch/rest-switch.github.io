@@ -782,6 +782,7 @@ Commands:
  enter                   enter a running container (will autocreate and start if needed)
  load <tar.xz>           load an existing image
  run                     alias for start
+ sethash <email> <pass>  set credentials for nginx.conf auth hash
  setpass <email> <pass>  set credentials for /secure website
  shell                   alias for enter
  show                    show docker image and container information
@@ -793,7 +794,7 @@ Commands:
  
 {% endhighlight %}
 
-One command worth noting is the <code>./rs-docker-util.sh enter</code> command. This command will run a bash shell in the running container allowing ssh-like access to the instance. This is handy for getting inside to review log files or to change configuration. Also notice the <code>setpass</code> command used to configure the Nginx login password without entering the container (more on this later).
+One command worth noting is the <code>./rs-docker-util.sh enter</code> command. This command will run a bash shell in the running container allowing ssh-like access to the instance. This is handy for getting inside to review log files or to change configuration. Also notice the <code>sethash</code> and <code>setpass</code> commands: these command are used to configure Nginx settings without entering the container (more on this later).
 
 After the <code>restswitch_web_docker_8e2dd31572da.tar.xz</code> and <code>rs-docker-util.sh</code> files have been copied to the remote deployment machine, create a Docker container from the compressed Docker image by typing: <code>./rs-docker-util.sh load restswitch_web_docker_8e2dd31572da.tar.xz</code>
 
@@ -814,7 +815,11 @@ The image is now installed and ready to be launched in a new Docker container.
 
 <br/>**Creating and Running the Docker Container**
 
-The last step is to create a running Docker container from the newly installed image. It is at this step where any port mapping gets applied (see <a href="#bweb-docker-ports">Docker Ports</a> above) if so desired. To create the running container, type: <code>./rs-docker-util.sh create</code>
+The last step is to configure the userid and passwords used to secure the system. The system is secured via two different credential sets. The first credential set secures the web based control panel using standard auth-basic authentication over SSL. The second set of credentials are used to sign the single-use secure URLs clients will use to send commands to the system. It may seem a little confusing why two credential sets exist, but take a moment to understand them both. It is recommended to use an email address for the userid. Note that the userid need not be an email address, but each user of the system must use a unique userid. Using an email address for the userid ensures global uniqueness. Additionally, the UI for both the control panel web page and the Android client label this field as "email address" so it may reduce confusion down the road to use an email address now.
+
+To assign the password used to secure the control panel web page, use the <code>setpass</code> command supplying the email address and password to be used: <code>./rs-docker-util.sh setpass "myuser@domain.com" "my-secure-web-password"</code>
+
+Likewise, to assign the password that will be used for signed URLs, use the <code>sethash</code> command supplying the email address and password to be used.  To set the signed url userid and password, type: <code>./rs-docker-util.sh sethash "myuser@domain.com" "my-signed-url-password"</code>
 
 {% highlight sh %}
  
@@ -943,7 +948,7 @@ Now that the A140808 device has a connection to the web server, it is now possib
 
 The Device Control Panel web page has two device sections for controlling two different unique devices. Paste the serial number in the upper-right edit field where it says "Device ID" of either one.
 
-Finally, in the upper-right corner of the web page, click the "Sign In" menu item, and enter the email address and password assigned previously (see <a href="#bweb-config-pw">setpadd</a> above), and finally click the "Sign In" button.
+Finally, in the upper-right corner of the web page, click the "Sign In" menu item, and enter the email address and password assigned previously (see <a href="#bweb-config-pw">sethash</a> above), and then click the "Sign In" button.
 
 At this point the configuration is complete! Clicking "Button 1" should result in relay 1 clicking shut for 250 ms. Likewise, clicking "Button 2" should result in relay 2 clicking shut for 250 ms. Now that the system is working end-to-end, it is time to build the Android client.
 
