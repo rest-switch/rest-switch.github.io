@@ -995,8 +995,13 @@ Using the Android Studio welcome dialog, select the "Open an existing Android St
 
 <br/>**Build Android Project Files**
 
-Before modifying any files, select "Build -&gt; Make Project" from the menu to confirm the project builds successfully.
+Select "Build -&gt; Make Project" from the menu to confirm the project builds successfully. There are not many options to tune in the app at compile time. Two settings which may be of interest for compile time tuning are located in the <a href="https://github.com/rest-switch/client_android_cp/blob/master/app/src/main/java/com/restswitch/controlpanel/AjaxTask.java" target="_blank">AjaxTask.java</a> file: <code>CONNECT_TIMEOUT_MS</code> and <code>READ_TIMEOUT_MS</code>
 
+The app can be tested from within Android Studio by selecting "Run -&gt; Run 'app'" from the menu. The "Device Chooser" dialog will appear where an Android device emulator may be selected. If an Android virtual device is not available from the dropdown, it may be necessary to <a href="http://developer.android.com/tools/devices/index.html" target="_blank">create a new virtual device</a> first. Another option is to use a physical Android device as the target device.
+
+All relevant settings for connecting the app to the web server as well as device selection are set at runtime in from the app settings menu. Note that the raw password is not stored on the device and is HMAC hashed with the email address. Therefore, changing the email address invalidates the hash and the password will need to be reset afterward.
+
+Once you are satisfied with the functioning of the app, a signed apk can be generated for deploying to a physical device by selecting "Build -&gt; Generate Signed APK..." and following the prompts. After the signed apk has been generated, transfer the file to the phone. One way of transferring the apk file to the phone is via email.
 
 <a class="anchor" id="conclusion"></a>
 <span>&nbsp;</span>
