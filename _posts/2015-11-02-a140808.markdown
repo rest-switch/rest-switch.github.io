@@ -991,6 +991,8 @@ drwxrwxr-x 3 johnc johnc 4.0K Oct  5 07:39 gradle
 
 Using the Android Studio welcome dialog, select the "Open an existing Android Studio project" menu option and navigate to the <code>client_android_cp-master</code> directory. After a few moments the IDE should come up with the project loaded. Android Studio is extremely user friendly and it will prompt to download any missing components.
 
+<br/><img width="680px" src="/images/android_studio.png"/>
+
 <a class="anchor" id="bandroid-build"></a>
 
 <br/>**Build Android Project Files**
@@ -1008,21 +1010,33 @@ Once you are satisfied with the functioning of the app, a signed apk can be gene
 
 ###Conclusion
 
-The A140808 controller is a powerful, robust, and inexpensive platform. This article is mainly geared toward getting up and running. Later articles will dive deeper into the extensive facilities and command set the device already has. For example, the outputs can be set on, off, or toggled for 0-255ms, and the inputs can be read or trigger a webhook. Digging into the <a href="https://github.com/rest-switch/device_a140808/tree/master/hlk-rm04/files/package/system/a140808/src" target="_blank">device firmware source</a> is a great place to start.
+The A140808 controller is a powerful, robust, and inexpensive platform. This article is mainly geared toward getting up and running. Later articles will dive deeper into the extensive facilities and command set of the device. For example, the outputs can be set on, off, or toggled for 0-255ms. Additionally, the inputs can be read or trigger a webhook. Digging into the <a href="https://github.com/rest-switch/device_a140808/tree/master/hlk-rm04/files/package/system/a140808/src" target="_blank">device firmware source</a> is a great place to start.
 
-<br/>The A140808 platform has several easy and obvious applications:
+<br/>The A140808 platform has several potential applications:
+
+**Garage Door Opener**
+
+<iframe width="420" height="315" src="https://www.youtube.com/embed/GuuRBDjM3E4" frameborder="0" allowfullscreen></iframe>
+
+<span>&nbsp;</span>
 
 **Thermostat**
 
 The potential exists for controlling an HVAC system much the same way the <a href="http://www.bayweb.com/media/2005/bw-wt4-1doc.pdf" target="_blank">BayWeb Thermostat</a> does. In this application a remote temperature sending device needs to be added either via serial (i.e. RS485) or WiFi connection. The number of relay outputs of the A140808 device are suitable and appropriate for controlling modern HVAC equipment.
 
+<span>&nbsp;</span>
+
 **Sprinkler System Control**
 
 The relay outputs of the A140808 device also make it highly siutable for controlling a sprinkler system the way <a href="https://opensprinkler.com" target="_blank">other projects</a> do, but at a much lower cost.
 
+<span>&nbsp;</span>
+
 **Home Alarm**
 
 Integration with an existing alarm system or alarm system components for an open source extensible alarm system.
+
+<span>&nbsp;</span>
 
 **Other Hardware**
 
