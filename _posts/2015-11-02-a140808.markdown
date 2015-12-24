@@ -991,7 +991,7 @@ drwxrwxr-x 3 johnc johnc 4.0K Oct  5 07:39 gradle
 
 Using the Android Studio welcome dialog, select the "Open an existing Android Studio project" menu option and navigate to the <code>client_android_cp-master</code> directory. After a few moments the IDE should come up with the project loaded. Android Studio is extremely user friendly and it will prompt to download any missing components.
 
-<br/><img width="680px" src="/images/android_studio.png"/>
+<br/><a href="/images/android_studio.png" target="_blank"><img width="680px" src="/images/android_studio.png"/></a>
 
 <a class="anchor" id="bandroid-build"></a>
 
