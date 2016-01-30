@@ -154,7 +154,7 @@ Ubuntu Trusty 14.04 requires the following prerequisites:
 
 {% highlight sh %}
 $ sudo apt-get update && sudo apt-get upgrade
-$ sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip pv git subversion docker
+$ sudo apt-get install make gcc g++ libncurses5-dev zlib1g-dev unzip pv git subversion docker.io
 $ sudo usermod -G docker $USER
 $ newgrp docker
 {% endhighlight %}
@@ -164,6 +164,7 @@ Amazon Linux requires the following prerequisites:
 {% highlight sh %}
 $ sudo yum update
 $ sudo yum install gcc gcc-c++ ncurses-devel zlib-devel pv patch perl\(Data::Dumper\) git subversion docker
+$ sudo service docker start
 $ sudo usermod -G docker $USER
 $ newgrp docker
 {% endhighlight %}
@@ -686,7 +687,7 @@ drwxrwxr-x 3 johnc johnc 4.0K Sep 30 22:34 docker
 
 <br/>**Configuring Certificates**
 
-Before building the project, the public certificate chain (which is the public root CA and the public certificate together) need to be placed in the Docker directory along with the private key of the certificate as shown below. These certificates were created in the <a href="#security-first">Security First</a> section above. This example assumes these certs are stored in the home directory:
+Before building the project, the public certificate chain (which is the public root CA and the public certificate together) need to be placed in the Docker directory along with the private key of the certificate as shown below. These certificates were created in the <a href="#security-first">Security First</a> section above. This example assumes these certs are stored in the home directory. Also note that the certificate names are being changed for the Docker script during the copy operation:
 
 {% highlight sh %}
 [server_nginx-master]$ cp ~/certs/acme-co_cert_chain_public.cer docker/cert-chain-public.pem
