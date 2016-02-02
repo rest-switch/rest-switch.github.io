@@ -85,7 +85,7 @@ toc: >
 <a class="anchor" id="introduction"></a>
 <span>&nbsp;</span>
 
-###Introduction
+<h3>Introduction</h3>
 This is an open source project to connect a high durability yet inexpensive 8 opto-isolated input / 8 relay output WiFi and Ethernet enabled controller via an encrypted websocket connection to the Internet. The configuration features an extremely low latency command and control architecture using Nginx or Redis based pub-sub. The result is a high quality yet extremely low cost solution with a huge number of IoT applications such as: simple on/off control, one-shot activation of devices like garage doors, state monitoring, Internet home thermostat, burglar alarm, and sprinkler system control to name only a few. The goal is to create an open source ecosystem of inexpensive commodity hardware and application software for a wide range of IoT command and control applications.
 
 <a class="anchor" id="intro-phys-insp"></a>
@@ -140,7 +140,7 @@ Looking at what all is included in this commercial quality device with WiFi, Eth
 <a class="anchor" id="getting-started"></a>
 <span>&nbsp;</span>
 
-###Getting Started
+<h3>Getting Started</h3>
 
 <a class="anchor" id="start-build"></a>
 
@@ -176,7 +176,7 @@ $ newgrp docker
 <a class="anchor" id="security-first"></a>
 <span>&nbsp;</span>
 
-###Security First
+<h3>Security First</h3>
 
 Comprehensive security is a primary concern of IoT applications. This project utilizes well established RSA asymmetric encryption deployed with high strength 4096 bit keys. Additionally, the signed URL design combines HMAC hashing using the high security SHA256 algorithm (HMAC-SHA256) and are narrowly limited in time. In the near future, the signed URL implementation will also add adaptive complexity and salting similar to that which is found in the <a href="https://en.wikipedia.org/wiki/Bcrypt" target="_blank">bcrypt</a> key derivation function implementation.
 
@@ -267,7 +267,7 @@ Make a note of where these files are located as they will be used in the next st
 <a class="anchor" id="building-firmware"></a>
 <span>&nbsp;</span>
 
-###Building the Firmware
+<h3>Building the Firmware</h3>
 
 <a class="anchor" id="bfirm-repo"></a>
 
@@ -405,7 +405,7 @@ The firmware generation for the HLK-RM04 is now complete. In the next section th
 <a class="anchor" id="flashing-firmware"></a>
 <span>&nbsp;</span>
 
-###Flashing the Firmware
+<h3>Flashing the Firmware</h3>
 
 <a class="anchor" id="ffirm-programmers"></a>
 
@@ -623,7 +623,7 @@ Once the command successfully completes, the device is ready to boot. Insert the
 <a class="anchor" id="booting-ssh"></a>
 <span>&nbsp;</span>
 
-###Booting and SSH
+<h3>Booting and SSH</h3>
 
 Once powered on, the red LED light on the HLK-RM04 should begin to blink as Linux begins to boot. Once the kernel is loaded the network indicator lights will begin to flash. The device is setup to automatically accept a DHCP issued TCP/IP address, so it is a simple matter to scan the network to find it. Perhaps the easiest way to find the IP address associated with the MAC address used above (see Figure 5) is to search the logs of the network DHCP server. Other options include network scanning apps such as <a href="https://play.google.com/store/apps/details?id=com.overlook.android.fing" target="_blank">Fing for Android</a>, <a href="https://itunes.apple.com/us/app/lanscan/id472226235" target="_blank">LanScan for OSX</a>, or <a href="https://www.linux.com/learn/tutorials/290879-beginners-guide-to-nmap" target="_blank">nmap for Linux</a>.
 
@@ -656,7 +656,7 @@ root@a140808:~#
 <a class="anchor" id="building-webserver"></a>
 <span>&nbsp;</span>
 
-###Building the Web Server
+<h3>Building the Web Server</h3>
 
 The web server used in this project is <a href="http://nginx.org" target="_blank">Nginx</a>. The modular nature of Nginx lends itself well not only to serving html content, but it can also provide a rock-solid publish-subscribe facility through the use of the <a href="http://highscalability.com/blog/2014/4/28/how-disqus-went-realtime-with-165k-messages-per-second-and-l.html" target="_blank">highly scalable</a> and reliable <a href="https://github.com/wandenberg/nginx-push-stream-module" target="_blank">push stream</a> module by <a href="https://br.linkedin.com/in/wandenberg-peixoto-52582a8" target="_blank">Wandenberg Peixoto</a>. Other benefits of Nginx include extremely easy SSL setup and configuration as well as a wide range of other integration modules. While the overall solution was also demonstrated to very work well with both <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="http://redis.io/topics/pubsub" target="_blank">Redis</a>, the simplicity and overall completeness of the Nginx solution edged out the competition for the goals of this application. The entire Nginx deployment package is bundled using a <a href="http://docs.docker.com/engine/userguide/dockerimages" target="_blank">docker image</a> which greatly simplifies numerous potential configuration and installation pitfalls making the entire process nearly foolproof.
 
@@ -883,7 +883,7 @@ The system is now ready to be used. The control panel web page can be accessed v
 <a class="anchor" id="a140808-setup"></a>
 <span>&nbsp;</span>
 
-###A140808 Device Setup
+<h3>A140808 Device Setup</h3>
 
 At this point we are ready to configure an A140808 device for use with the system and run an end-to-end test! The first thing to do is to set the host name and port of the web server on the A140808 device. Access the device using ssh (see <a href="#booting-ssh">Booting and SSH</a>). Once connected, edit the <code>/etc/config/cloudcfg</code> file to set the host name and port (8443 in this example). The A140808 daemon will need to be restarted to pickup the new value.
 
@@ -956,7 +956,7 @@ At this point the configuration is complete! Clicking "Button 1" should result i
 <a class="anchor" id="building-android"></a>
 <span>&nbsp;</span>
 
-###Building Android
+<h3>Building Android</h3>
 
 The Android client implements equivalent functionality to that of the web control panel as a native Android app. The app is designed with a quick access and quick dismissing overlay style to make it as convenient as possible to popup and dismiss quickly. Android is the only mobile app available for this project right now, so an iOS port pull request would be greatly appreciated.
 
@@ -1009,7 +1009,7 @@ Once you are satisfied with the functioning of the app, a signed apk can be gene
 <a class="anchor" id="conclusion"></a>
 <span>&nbsp;</span>
 
-###Conclusion
+<h3>Conclusion</h3>
 
 The A140808 controller is a powerful, robust, and inexpensive platform. This article is mainly geared toward getting up and running. Later articles will dive deeper into the extensive facilities and command set of the device. For example, the outputs can be set on, off, or toggled for 0-255ms. Additionally, the inputs can be read or trigger a webhook. Digging into the <a href="https://github.com/rest-switch/device_a140808/tree/master/hlk-rm04/files/package/system/a140808/src" target="_blank">device firmware source</a> is a great place to start.
 
@@ -1047,7 +1047,7 @@ Other projects based on the Ralink RT5350 SOC include devices in the <a target="
 <a class="anchor" id="contribute"></a>
 <span>&nbsp;</span>
 
-###How to Help
+<h3>How to Help</h3>
 
 The goal of this effort is to create a highly secure open source IoT ecosystem. A primary problem with existing IoT products is weak security. Unfortunately high security and encryption create an opaque environment, and consumers have no good way of knowing what their IoT devices are doing. One way to remove this uncertainty is to open source the implementation.
 
@@ -1060,7 +1060,7 @@ This is an open source project and pull requests are greatly appreciated. This p
 <a class="anchor" id="comments"></a>
 <span>&nbsp;</span>
 
-###Comments
+<h3>Comments</h3>
 
 <div id="disqus_thread"></div>
 <script>
