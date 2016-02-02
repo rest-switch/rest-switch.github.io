@@ -169,10 +169,6 @@ $ sudo usermod -G docker $USER
 $ newgrp docker
 {% endhighlight %}
 
-**Known Issues**
-
- - Ubuntu Wily Werewolf 15.10 is known to have issues building the forked version of OpenWRT used in this project. Use version 15.04 or another version of Linux.
-
 <a class="anchor" id="security-first"></a>
 <span>&nbsp;</span>
 
