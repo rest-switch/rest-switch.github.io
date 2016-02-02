@@ -1011,7 +1011,7 @@ Once you are satisfied with the functioning of the app, a signed apk can be gene
 
 <h3>Conclusion</h3>
 
-The A140808 controller is a powerful, robust, and inexpensive platform. This article is mainly geared toward getting up and running. Later articles will dive deeper into the extensive facilities and command set of the device. For example, the outputs can be set on, off, or toggled for 0-255ms. Additionally, the inputs can be read or trigger a webhook. Digging into the <a href="https://github.com/rest-switch/device_a140808/tree/master/hlk-rm04/files/package/system/a140808/src" target="_blank">device firmware source</a> is a great place to start.
+The A140808 controller is a powerful, robust, and inexpensive platform. This article is mainly geared toward getting up and running. Later articles will dive deeper into the extensive facilities and command set of the device. For example, the outputs can be set on, off, or toggled for 0-255ms. Additionally, the inputs can be read or trigger a webhook. Digging into the <a href="https://github.com/rest-switch/device_a140808/tree/master/hlk-rm04/files/package/utils/a140808/src" target="_blank">device firmware source</a> is a great place to start.
 
 <br/>The A140808 platform has several potential applications:
 
