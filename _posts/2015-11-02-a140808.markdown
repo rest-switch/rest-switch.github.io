@@ -669,8 +669,6 @@ To get started, we need to understand the mechanisms at play in the overall solu
 
 In addition to the pub-sub capability described above, the Nginx solution serves an html based control panel secured with <a href="https://www.nginx.com/resources/admin-guide/restricting-access" target="_blank" rel="noopener noreferrer">auth basic</a> over SSL. While it is possible to configure a database to handle more complex authentication scenarios and multi-tenant capabilities, such solutions will not be presented here for the sake of simplicity.
 
-<span style="color: #f00">Note: Ubuntu Wily Werewolf 15.10 is known to have issues building this Docker image.</span>
-
 Begin by downloading the server_nginx repository and unpack:
 
 {% highlight sh %}
