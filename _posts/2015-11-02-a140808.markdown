@@ -94,11 +94,11 @@ This is an open source project to connect a high durability yet inexpensive 8 op
 **Physical Inspection**
 
 The device used in this project <strike>is available from <a href="http://www.aliexpress.com/item/Free-shipping-KR-0808WIFI-S5A-wifi-version-8-into-8-out-of-relay-module/1945279388.html" target="_blank">AliExpress</a> for approximately $57 at the time of this writing</strike>.
-<p style="color:red">Update 2/1/2016: This article appears to have sold out the original inventory on this item.</p>
+<p style="color:red">Update 9/16/2016: This article appears to have sold out the original inventory on this item.</p>
 <ul>
-  <li>Alternate Source: <a href="http://www.aliexpress.com/item/Free-shipping-8-WIFI-network-relay-board-Network-control-switch-relay-network-mobile-phone-control-relay/32437800178.html" target="_blank">AliExpress $82.50</a></li>
-  <li>Alternate Source: 16 Relay Version, no enclosure: <a href="http://www.aliexpress.com/item/Q14078-HLK-SW16-16-Channel-Android-Smart-Phone-CWiFi-Relay-WiFi-Relay-Module-FS/32549683968.html" target="_blank">AliExpress $46.10</a></li>
-  <li>Alternate Source: <a href="http://www.aliexpress.com/item/WIFI-network-relay-control-board-network-relay-controller-mobile-phone-relay-control-switch/1545652879.html" target="_blank">AliExpress $106</a></li>
+  <li>Alternate Source: <a href="https://www.aliexpress.com/item/8-way-WIFI-network-relay-board-network-control-switch-network-relay-mobile-phone-control-relay/32711504118.html" target="_blank">AliExpress $120</a></li>
+  <li>Alternate Source: 16 Relay Version, no enclosure: <a href="http://www.aliexpress.com/item/Q14078-HLK-SW16-16-Channel-Android-Smart-Phone-CWiFi-Relay-WiFi-Relay-Module-FreePost/32329473853.html" target="_blank">AliExpress $44.99</a></li>
+  <li>Alternate Source: Looks like it could be the same?: <a href="http://www.aliexpress.com/item/wifi-8-CH-8-DO-5A-relay-module-android-phone-ethernet-tcp-ip-PC-control-modbus/1433510211.html" target="_blank">AliExpress $84.10</a></li>
 </ul>
 It comes with no useful documentation and its factory configuration is of limited value. There is no model number, so I decided to call it the A140808 which encodes the fact that it was the first project device (A) that I bought in 2014 and it has 08 inputs and 08 outputs.
 
